@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum FlagType
 {
+    // Phase 1
     MetNurse,
     FoundMedicine,
     SawHallucination,
@@ -11,7 +12,16 @@ public enum FlagType
     ExploredRoom2,
     ExploredRoom3,
     TriggeredAlarm,
-    FoundExit
+    FoundExit,
+    // Phase 2+
+    checkedOwnRoom,
+    facedMirror,
+    readMedicalRecord,
+    listenedToNPC,
+    attackedNPC,
+    collectedAllClues,
+    followedHallucination,
+    triedToEscape
 }
 
 public class FlagManager : MonoBehaviour
