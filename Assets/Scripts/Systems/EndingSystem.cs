@@ -68,12 +68,7 @@ public class EndingSystem : MonoBehaviour
     }
 
     bool IsIsolated()
-    {
-        // In single player, isolation ending is not possible
-        // Multiplayer: check if other players awakened while this player did not
-        // Stub: returns false for now (requires ParanoiaSystem integration in Phase 3)
-        return false;
-    }
+        => ParanoiaSystem.Instance?.IsLocalPlayerIsolated() ?? false;
 
     void TriggerEnding(YomawariEnding ending)
     {
