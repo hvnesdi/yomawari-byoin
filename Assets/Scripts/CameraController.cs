@@ -4,18 +4,11 @@ public class CameraController : MonoBehaviour
 {
     public float mouseSensitivity = 100f;
     public Transform playerBody;
-
-    [Header("しゃがみカメラ設定")]
-    public float standCameraY = 0.8f;
-    public float crouchCameraY = 0.3f;
-
     private float xRotation = 0f;
-    private PlayerController playerController;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        playerController = playerBody.GetComponent<PlayerController>();
     }
 
     void Update()
