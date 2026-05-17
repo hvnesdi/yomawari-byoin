@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -31,14 +32,17 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
         bool isGrounded = controller.isGrounded;
         if (isGrounded && velocity.y < 0) velocity.y = -2f;
 
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-        float speed = isCrouching ? crouchSpeed : (Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed);
+        float x = (kb.dKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed ? 1f : 0f);
+        float z = (kb.wKey.isPressed ? 1f : 0f) - (kb.sKey.isPressed ? 1f : 0f);
+        float speed = isCrouching ? crouchSpeed : (kb.leftShiftKey.isPressed ? runSpeed : walkSpeed);
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        Vector3 move = Vector3.ClampMagnitude(transform.right * x + transform.forward * z, 1f);
         controller.Move(move * speed * Time.deltaTime);
 
         velocity.y += gravity * Time.deltaTime;
@@ -47,7 +51,10 @@ public class PlayerController : MonoBehaviour
 
     void HandleCrouch()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        var kb = Keyboard.current;
+        if (kb == null) return;
+
+        if (kb.cKey.wasPressedThisFrame)
         {
             isCrouching = !isCrouching;
             controller.height = isCrouching ? crouchHeight : standHeight;
