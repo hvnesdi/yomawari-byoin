@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_POST_PROCESSING_STACK_V2 || UNITY_URP
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+#endif
 
 /// <summary>
 /// Per-player hallucination level manager (0-100).
@@ -21,11 +23,13 @@ public class HallucinationSystem : MonoBehaviour
     public float baseRisePerMinute = 1f;
 
     [Header("Post Processing")]
+#if UNITY_POST_PROCESSING_STACK_V2 || UNITY_URP
     public Volume postProcessVolume;
 
     private Vignette vignette;
     private ChromaticAberration chromaticAberration;
     private LensDistortion lensDistortion;
+#endif
 
     // Per-player levels: key = playerID (local player = "local")
     private readonly Dictionary<string, float> playerLevels = new();
@@ -44,12 +48,14 @@ public class HallucinationSystem : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
 
+#if UNITY_POST_PROCESSING_STACK_V2 || UNITY_URP
         if (postProcessVolume != null)
         {
             postProcessVolume.profile.TryGet(out vignette);
             postProcessVolume.profile.TryGet(out chromaticAberration);
             postProcessVolume.profile.TryGet(out lensDistortion);
         }
+#endif
     }
 
     void Update()
@@ -106,7 +112,7 @@ public class HallucinationSystem : MonoBehaviour
     void ApplyVisualEffects(string playerID)
     {
         float t = GetLevel(playerID) / 100f;
-
+#if UNITY_POST_PROCESSING_STACK_V2 || UNITY_URP
         if (vignette != null)
             vignette.intensity.value = Mathf.Lerp(0.15f, 0.75f, t);
 
@@ -115,6 +121,7 @@ public class HallucinationSystem : MonoBehaviour
 
         if (lensDistortion != null)
             lensDistortion.intensity.value = Mathf.Lerp(0f, -0.5f, t);
+#endif
     }
 
     public void ResetPlayer(string playerID)
