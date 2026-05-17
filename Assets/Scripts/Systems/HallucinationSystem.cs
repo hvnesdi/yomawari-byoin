@@ -95,6 +95,12 @@ public class HallucinationSystem : MonoBehaviour
             HallucinationModifier.FacedMirror => FallOnMirrorFace,
             HallucinationModifier.ListenedNPC => FallOnNPCListen,
             HallucinationModifier.FoundClue   => FallOnClueFound,
+            // Discord voice modifiers (CLAUDE.md Phase 5)
+            HallucinationModifier.LoudScream  =>  5f,
+            HallucinationModifier.Talking     =>  2f,
+            HallucinationModifier.AllSilent   => -10f,
+            HallucinationModifier.AllSpeaking => -15f,
+            HallucinationModifier.SoloOther   =>  3f,
             _ => 0f
         };
         RaiseLevel(playerID, delta);
@@ -131,7 +137,9 @@ public class HallucinationSystem : MonoBehaviour
 public enum HallucinationModifier
 {
     Captured, AttackedNPC, EnteredArea, HidingTick,
-    FacedMirror, ListenedNPC, FoundClue
+    FacedMirror, ListenedNPC, FoundClue,
+    // Discord voice (Phase 5)
+    LoudScream, Talking, AllSilent, AllSpeaking, SoloOther
 }
 
 public enum HallucinationBand { Low, Mid, High, Extreme }
