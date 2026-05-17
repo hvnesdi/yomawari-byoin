@@ -24,3 +24,6 @@ ExportedObj/
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/
 .DS_Store
+*.log
+game_screenshot.png
+.claude/worktrees/
