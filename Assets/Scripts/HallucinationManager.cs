@@ -8,7 +8,7 @@ public class HallucinationManager : MonoBehaviour
 
     [Header("Hallucination Settings")]
     [Range(0, 10)] public float level = 0f;
-    public float riseRatePerSecond = 0.05f;
+    public float riseRatePerSecond = 0.03f;
     public float maxLevel = 10f;
 
     [Header("Camera Shake")]

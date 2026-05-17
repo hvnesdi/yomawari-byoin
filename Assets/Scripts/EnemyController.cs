@@ -5,15 +5,15 @@ public class EnemyController : MonoBehaviour
 {
     [Header("Patrol")]
     public Transform[] waypoints;
-    public float patrolSpeed = 2f;
+    public float patrolSpeed = 1.8f;
 
     [Header("Detection")]
     public float detectionRange = 10f;
-    public float detectionAngle = 60f;
+    public float detectionAngle = 50f;
     public float catchDistance = 1.5f;
 
     [Header("Chase")]
-    public float chaseSpeed = 4f;
+    public float chaseSpeed = 3.5f;
 
     [Header("Capture")]
     public Transform playerSpawnPoint;

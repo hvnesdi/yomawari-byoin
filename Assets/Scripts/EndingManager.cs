@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,7 @@ public enum EndingType
 public class EndingManager : MonoBehaviour
 {
     public static EndingManager Instance { get; private set; }
+    public static event Action<EndingType> OnEndingTriggered;
 
     [Header("UI")]
     public GameObject endingPanel;
@@ -60,6 +62,7 @@ public class EndingManager : MonoBehaviour
 
     public void TriggerEnding(EndingType ending)
     {
+        OnEndingTriggered?.Invoke(ending);
         if (endingPanel != null) endingPanel.SetActive(true);
         string msg = ending switch
         {
