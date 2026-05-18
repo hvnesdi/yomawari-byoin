@@ -50,44 +50,36 @@ public class SceneScreenshotter
 
     public static void CaptureAll()
     {
-        string outDir = "C:/Users/hvnes/YomawariByoin/Screenshots";
+        // Resolve outputs/ relative to the project (worktree-aware)
+        string projRoot = Path.GetDirectoryName(Application.dataPath);
+        string outDir = Path.Combine(projRoot, "outputs", "hospital_hq");
+        Directory.CreateDirectory(outDir);
+        // Keep a copy in the legacy Screenshots/ folder too
+        string legacyDir = Path.Combine(projRoot, "Screenshots");
+        Directory.CreateDirectory(legacyDir);
 
-        CaptureScene(
-            "Assets/Scenes/Hospital.unity",
-            outDir + "/1F_Corridor.png",
-            new Vector3(-5, 1.7f, 0),
-            new Vector3(0, 90, 0)
-        );
+        var shots = new (string scene, string name, Vector3 pos, Vector3 rot)[]
+        {
+            ("Assets/Scenes/Hospital.unity",         "1F_Corridor",       new Vector3(-5f, 1.65f,  0f), new Vector3(0,  90, 0)),
+            ("Assets/Scenes/Hospital.unity",         "1F_PatientRoom",    new Vector3( 4f, 1.65f,  4f), new Vector3(0, 200, 0)),
+            ("Assets/Scenes/Hospital.unity",         "1F_NearDoor",       new Vector3(-3.5f,1.65f, 9f), new Vector3(0, 270, 0)),
+            ("Assets/Scenes/Hospital2F.unity",       "2F_Corridor",       new Vector3(-5f, 1.65f,  0f), new Vector3(0,  90, 0)),
+            ("Assets/Scenes/Hospital2F.unity",       "2F_Ward",           new Vector3( 4f, 1.65f,  6f), new Vector3(0, 200, 0)),
+            ("Assets/Scenes/Hospital3F.unity",       "3F_Corridor",       new Vector3(-5f, 1.65f,  0f), new Vector3(0,  90, 0)),
+            ("Assets/Scenes/Hospital3F.unity",       "3F_Isolation",      new Vector3( 4f, 1.65f, 10f), new Vector3(0, 200, 0)),
+            ("Assets/Scenes/HospitalBasement.unity", "Basement_Records",  new Vector3( 0f, 1.65f, -5f), new Vector3(0,   0, 0)),
+            ("Assets/Scenes/HospitalBasement.unity", "Basement_Cabinets", new Vector3(-2.5f,1.65f, 0f), new Vector3(0,  60, 0)),
+        };
 
-        CaptureScene(
-            "Assets/Scenes/Hospital.unity",
-            outDir + "/1F_PatientRoom.png",
-            new Vector3(5, 1.7f, 2),
-            new Vector3(0, 180, 0)
-        );
+        foreach (var s in shots)
+        {
+            string outPath = Path.Combine(outDir, s.name + ".png");
+            CaptureScene(s.scene, outPath, s.pos, s.rot);
+            // mirror into legacy Screenshots/
+            try { File.Copy(outPath, Path.Combine(legacyDir, s.name + ".png"), true); } catch { /* ignore */ }
+        }
 
-        CaptureScene(
-            "Assets/Scenes/Hospital2F.unity",
-            outDir + "/2F_Corridor.png",
-            new Vector3(-5, 1.7f, 0),
-            new Vector3(0, 90, 0)
-        );
-
-        CaptureScene(
-            "Assets/Scenes/Hospital3F.unity",
-            outDir + "/3F_Corridor.png",
-            new Vector3(-5, 1.7f, 0),
-            new Vector3(0, 90, 0)
-        );
-
-        CaptureScene(
-            "Assets/Scenes/HospitalBasement.unity",
-            outDir + "/Basement.png",
-            new Vector3(0, 1.7f, -5),
-            new Vector3(0, 0, 0)
-        );
-
-        Debug.Log("All screenshots captured!");
+        Debug.Log($"All screenshots captured to: {outDir}");
         EditorApplication.Exit(0);
     }
 }
