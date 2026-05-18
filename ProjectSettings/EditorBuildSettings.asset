@@ -6,7 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Hospital.unity
+    guid: be4425d37be2cbe4697a4acf0c856593
+  - enabled: 1
+    path: Assets/Scenes/Hospital2F.unity
+    guid: fbbbc93cc84c40744863e931f46e324c
+  - enabled: 1
+    path: Assets/Scenes/Hospital3F.unity
+    guid: 798138e6944868f48a3ef9bfb5ac63c8
+  - enabled: 1
+    path: Assets/Scenes/HospitalBasement.unity
+    guid: ae23aee50562f1244b2d81e53d05046c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

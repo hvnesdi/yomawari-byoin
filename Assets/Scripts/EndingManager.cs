@@ -20,6 +20,8 @@ public class EndingManager : MonoBehaviour
     public GameObject endingPanel;
     public Text endingText;
 
+    private bool endingTriggered;
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
@@ -28,7 +30,7 @@ public class EndingManager : MonoBehaviour
 
     void Update()
     {
-        CheckEndings();
+        if (!endingTriggered) CheckEndings();
     }
 
     void CheckEndings()
@@ -60,6 +62,7 @@ public class EndingManager : MonoBehaviour
 
     public void TriggerEnding(EndingType ending)
     {
+        endingTriggered = true;
         if (endingPanel != null) endingPanel.SetActive(true);
         string msg = ending switch
         {

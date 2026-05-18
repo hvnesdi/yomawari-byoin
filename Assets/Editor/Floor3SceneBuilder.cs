@@ -51,10 +51,19 @@ public class Floor3SceneBuilder
 
         // プレイヤー自身の病室（右側 z=0 特別部屋 - 鏡あり）
         CreateRoom("PlayerOwnRoom", new Vector3(7, 1.4f, 0), new Vector3(5, 2.8f, 5));
-        CreateCube("PlayerOwnRoom_Bed",      new Vector3(7.5f, 0.35f, 0),     new Vector3(1.2f, 0.4f, 1.8f));
+        var ownRoomBed = CreateCube("PlayerOwnRoom_Bed", new Vector3(7.5f, 0.35f, 0), new Vector3(1.2f, 0.4f, 1.8f));
+        var ownRoomClue = ownRoomBed.AddComponent<ClueInteractable>();
+        ownRoomClue.clueType = ClueType.OwnRoom;
+        ownRoomClue.promptText = "E: 調べる（自分の病室）";
+
         CreateCube("PlayerOwnRoom_Desk",     new Vector3(9.2f, 0.6f,  -1.5f), new Vector3(1f,   1.2f, 0.5f));
         CreateCube("PlayerOwnRoom_Calendar", new Vector3(9.8f, 1.8f,  0),     new Vector3(0.02f,0.4f, 0.3f));
-        CreateCube("PlayerOwnRoom_Mirror",   new Vector3(4.1f, 1.4f, 0),     new Vector3(0.05f,1.4f, 0.7f));
+
+        var mirrorGo = CreateCube("PlayerOwnRoom_Mirror", new Vector3(4.1f, 1.4f, 0), new Vector3(0.05f,1.4f, 0.7f));
+        var mirrorClue = mirrorGo.AddComponent<ClueInteractable>();
+        mirrorClue.clueType = ClueType.Mirror;
+        mirrorClue.promptText = "E: 鏡を見る";
+
         CreateCube("PlayerOwnRoom_NamePlate",new Vector3(1.9f, 1.4f, 2.0f),  new Vector3(0.02f,0.15f,0.25f));
 
         // 観察室（廊下北端）

@@ -27,7 +27,9 @@ public class EnemyController : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        var playerGo = GameObject.FindGameObjectWithTag("Player");
+        if (playerGo != null) player = playerGo.transform;
+        else Debug.LogWarning("[EnemyController] Player tag not found");
         GoToNextWaypoint();
     }
 
@@ -51,6 +53,7 @@ public class EnemyController : MonoBehaviour
 
     void Chase()
     {
+        if (player == null) { state = State.Patrol; return; }
         agent.speed = chaseSpeed;
         agent.SetDestination(player.position);
 
@@ -62,6 +65,7 @@ public class EnemyController : MonoBehaviour
 
     bool CanSeePlayer()
     {
+        if (player == null) return false;
         Vector3 dir = player.position - transform.position;
         if (dir.magnitude > detectionRange) return false;
         if (Vector3.Angle(transform.forward, dir) > detectionAngle * 0.5f) return false;

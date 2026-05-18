@@ -48,7 +48,10 @@ public class BasementSceneBuilder
         CreateCube("DirArch_Chair",   new Vector3(10, 0.4f, -4.5f), new Vector3(0.6f, 0.8f, 0.6f));
         CreateCube("DirArch_Cabinet", new Vector3(13.5f, 0.9f, -8), new Vector3(0.4f, 1.8f, 4f));
         // 証拠品（電灯で照らされた重要書類）
-        CreateCube("Evidence_MedicalRecord", new Vector3(10, 0.85f, -6), new Vector3(0.25f, 0.02f, 0.18f));
+        var medRecordGo = CreateCube("Evidence_MedicalRecord", new Vector3(10, 0.85f, -6), new Vector3(0.25f, 0.02f, 0.18f));
+        var medRecordClue = medRecordGo.AddComponent<ClueInteractable>();
+        medRecordClue.clueType = ClueType.MedicalRecord;
+        medRecordClue.promptText = "E: カルテを読む";
 
         // 薬品保管室
         CreateRoom("MedStorage", new Vector3(10, 1.3f, 8), new Vector3(8, 2.6f, 8));
