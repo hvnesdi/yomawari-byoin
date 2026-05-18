@@ -206,6 +206,22 @@ public class AudioSystem : MonoBehaviour
             bgmMixerGroup.audioMixer.SetFloat("Distortion", dist);
     }
 
+    // ──────────── Resources.Load API ────────────
+
+    public void PlayBGM(string name)
+    {
+        var clip = Resources.Load<AudioClip>("Audio/BGM/" + name);
+        if (clip == null) { Debug.LogWarning($"[AudioSystem] BGM not found: {name}"); return; }
+        PlayBGM(clip);
+    }
+
+    public void PlaySE(string name)
+    {
+        var clip = Resources.Load<AudioClip>("Audio/SE/" + name);
+        if (clip == null) { Debug.LogWarning($"[AudioSystem] SE not found: {name}"); return; }
+        PlayOneShot(clip);
+    }
+
     // ──────────── Pool ────────────
 
     AudioSource CreatePoolSource()
