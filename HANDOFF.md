@@ -90,6 +90,54 @@ NullReferenceException も InvalidOperationException も出ていない。
 
 ---
 
+## 見た目（M4/M5）の到達点と残件
+
+**目標**: 市販レベルのホラーゲーム。
+
+### 入っているもの
+
+| 領域 | 内容 |
+|------|------|
+| 描画 | HDR / 4x MSAA / 追加ライトの影(2048) / SSAO / 影距離32m |
+| ポストプロセス | ACES / 彩度-20・コントラスト+16 / 色温度-16 / 影を青・ハイライトを暖色 / ブルーム / フィルムグレイン |
+| 空間 | フロアごとに深くなる環境光とフォグ、切れた蛍光灯68本による明暗リズム |
+| 小道具 | パックの `P_Lamp` を16基に適用（自作の直方体から差し替え） |
+| キャラクター | Blender 製の一体成型モデル4体、幻覚レベルでモデルごと差し替え |
+| 汚し | デカール約1,600枚。種類ごとに付く高さを変えている |
+
+### 🔴 残っている見た目の課題
+
+1. **3F 右壁に薄い矩形が残る**（`Screenshots/3F_Scenery.png`）。
+   水染みデカールが原因と判明したので使用を止めたが、完全には消えていない。
+   `decal_waterstain_01.png` を「白背景＋薄いベージュの筋」から
+   **暗い染み**として作り直すのが本筋（Blender/Python で生成可能）
+2. **天井が床プレハブの流用**。未使用の `P_Ceiling_01` に差し替える余地あり
+3. **廊下の silhouette が単調**。配管・ダクト・案内表示が無い。
+   Blender で作れる（`tools/blender/make_characters.py` と同じ方式）
+4. **地下に蛍光灯プロップが0基**。点光源だけで、光源として見えるものが無い
+5. 汚しが遠目に効いていない。密度ではなくテクスチャ自体のコントラスト不足
+
+### ⚠️ 見た目の不具合を追うときの注意（実際に何度も外した記録）
+
+**症状が同じでも原因は毎回別だった。** 「壁に白い矩形」で3回追って、原因は
+アルベドが1.0超 → デカールのブレンド係数の不整合 → 白背景テクスチャ、と全て別物。
+推測で当てにいくと必ず外れるので、以下の順で**実測**すること。
+
+1. `run_playtest.ps1` で画を撮り、Python で該当座標の輝度を測る
+2. `VisualDiagnostics.DumpShowcaseIds` で ID 画像とパレットCSVを出し、座標から逆引き
+3. マテリアルの値は `.mat` ファイルを直接読んで確認する（API 呼び出しの成功を信じない）
+
+**道具自体も疑うこと。** 実際に2回やられた。
+- 閾値を 0.72 に置いて「0件」→ ツールが壊れたと誤判断。実際は矩形の輝度が最大0.665だった
+- ID パスが透明メッシュを不透明として描画 → 車椅子の部品だと誤特定した（修正済み）
+
+**Unity API の落とし穴**
+- `Material.SetInt` は URP の `_SrcBlend` 等（Float プロパティ）に**書き込めない**。`SetFloat` を使う
+- FBX モデルの `localRotation` / `localScale` を上書きしてはいけない。
+  インポーターが Blender(Z-up・m) と Unity(Y-up・cm) の変換をそこに入れている
+
+---
+
 ## 反映コマンド
 
 **これ1本でよい。** 全パスが冪等なので、何度実行しても安全。
@@ -295,10 +343,35 @@ git add -A && git commit -m "M1: システム常駐化・シーン結線修復�
 | セットアップ一式を反映＋検証 | `run_all.ps1` |
 | 実際に動くか（プレイモード＋エンド発火） | `run_playtest.ps1` |
 | 見た目の診断 → 雰囲気パス適用 | `run_m3.ps1` |
-| 明るい部分の正体を特定（**現在壊れている**） | `run_identify.ps1` |
+| 画づくり設定の適用＋各フロア撮影 | `run_look.ps1` |
+| キャラクター造形の作り直し＋撮影 | `run_characters.ps1` |
+| 壁パネルの配置と重なりを調べる | `run_walls.ps1` |
 
 `run_playtest.ps1` はプレイ画面を `Screenshots/PlayMode_1F.png` に保存する。
 見た目を変えたら必ずこれで撮って確認すること。
+
+### Blender
+
+キャラクターとモデルの生成は Blender をヘッドレスで使う。
+プレビュー描画込みで1分程度なので、4分かかる Unity 往復より速く形を詰められる。
+
+```bash
+"/c/Program Files/Blender Foundation/Blender 5.1/blender.exe" --background --python tools/blender/make_characters.py
+```
+
+出力は `Assets/Models/Characters/*.fbx` と `Screenshots/blender_*.png`。
+体型は `lean`（前傾）/ `arm_drop`（腕の垂れ）/ `hunch`（猫背）/ `thin`（痩せ）で振れる。
+
+**Blender MCP** も導入済み（`tools/blender-mcp-main/`、アドオン配置と
+`claude mcp add blender uvx blender-mcp` 実行済み）。ただし MCP は
+Claude Code の再起動後でないと使えない。使う場合は Blender を起動して
+N パネルの BlenderMCP タブで「Connect to Claude」を押すこと。
+ヘッドレス実行で足りるならそちらのほうが速い。
+
+### Steamworks SDK
+
+`C:\Users\hvnes\Downloads\steamworks_sdk_164.zip` に未展開で置いてある。
+マルチプレイ着手時に使う。プロジェクトは既に Steamworks.NET パッケージを参照している。
 
 ---
 
