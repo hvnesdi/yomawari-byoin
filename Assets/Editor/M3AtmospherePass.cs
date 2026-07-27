@@ -33,31 +33,37 @@ public static class M3AtmospherePass
         public float flickerRatio;   // ちらつかせる蛍光灯の割合
     }
 
+    // lightScale について:
+    //   当初は 0.45〜0.7 に落としていたが、それは _BaseColor が 2.5 という
+    //   過剰なアルベドを打ち消すための調整だった。ClampOverbrightAlbedo で
+    //   アルベドを 0.78 以下に直した結果、光量まで絞ると画面全体が最大輝度 0.35 の
+    //   「一様に暗いだけ」になり、光の溜まりと闇のコントラストが失われた。
+    //   暗さは ambient と fog で作り、ライトは光源として立たせる。
     static FloorMood MoodFor(string scenePath)
     {
         if (scenePath.EndsWith("HospitalBasement.unity"))
             return new FloorMood {
                 ambient = new Color(0.020f, 0.020f, 0.026f),
                 fogColor = new Color(0.010f, 0.010f, 0.014f), fogDensity = 0.075f,
-                lightScale = 0.45f, flickerRatio = 0.5f };
+                lightScale = 0.75f, flickerRatio = 0.5f };
 
         if (scenePath.EndsWith("Hospital3F.unity"))
             return new FloorMood {
                 ambient = new Color(0.030f, 0.030f, 0.038f),
                 fogColor = new Color(0.018f, 0.018f, 0.024f), fogDensity = 0.055f,
-                lightScale = 0.55f, flickerRatio = 0.4f };
+                lightScale = 0.85f, flickerRatio = 0.4f };
 
         if (scenePath.EndsWith("Hospital2F.unity"))
             return new FloorMood {
                 ambient = new Color(0.038f, 0.038f, 0.046f),
                 fogColor = new Color(0.022f, 0.022f, 0.028f), fogDensity = 0.045f,
-                lightScale = 0.6f, flickerRatio = 0.3f };
+                lightScale = 0.95f, flickerRatio = 0.3f };
 
         // 1F はチュートリアル。完全な暗闇だと操作を覚えられないので少しだけ明るい
         return new FloorMood {
             ambient = new Color(0.048f, 0.048f, 0.056f),
             fogColor = new Color(0.028f, 0.028f, 0.034f), fogDensity = 0.035f,
-            lightScale = 0.7f, flickerRatio = 0.25f };
+            lightScale = 1.1f, flickerRatio = 0.25f };
     }
 
     /// <summary>
@@ -172,10 +178,56 @@ public static class M3AtmospherePass
         return moved;
     }
 
+    /// <summary>
+    /// アルベド（_BaseColor）が 1.0 を超えているマテリアルを直す。
+    ///
+    /// `Mat_Walllime01_C` は _BaseColor = (2.5, 2.4, 2.2) だった。
+    /// アルベドは「入射光のうち何割を反射するか」なので 1.0 を超えることはあり得ず、
+    /// 2.5 倍された壁は照明を落としても明るいままになる。
+    /// これがプレイ画面の「暗い廊下に浮く白い矩形」の正体
+    /// （オブジェクトID描画で 100% が Mat_Walllime01_C の壁パネルと判明）。
+    ///
+    /// 1.0 以下に戻すだけでなく、廃病院の古びた壁として 0.78 を上限にする。
+    /// </summary>
+    const float MaxAlbedo = 0.78f;
+
+    [MenuItem("消灯/M3: アルベド1.0超のマテリアルを直す")]
+    public static void ClampOverbrightAlbedo()
+    {
+        int fixedCount = 0;
+
+        foreach (var guid in AssetDatabase.FindAssets("t:Material"))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null || !mat.HasProperty("_BaseColor")) continue;
+
+            var color = mat.GetColor("_BaseColor");
+            float peak = Mathf.Max(color.r, Mathf.Max(color.g, color.b));
+            if (peak <= MaxAlbedo + 0.001f) continue;
+
+            // 色味は保ったまま明度だけ落とす
+            float scale = MaxAlbedo / peak;
+            var toned = new Color(color.r * scale, color.g * scale, color.b * scale, color.a);
+
+            mat.SetColor("_BaseColor", toned);
+            if (mat.HasProperty("_Color")) mat.SetColor("_Color", toned);
+            EditorUtility.SetDirty(mat);
+            fixedCount++;
+
+            Debug.Log($"[M3AtmospherePass] アルベド補正: {mat.name} " +
+                      $"({color.r:F2},{color.g:F2},{color.b:F2}) → ({toned.r:F2},{toned.g:F2},{toned.b:F2})");
+        }
+
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[M3AtmospherePass] アルベド補正 {fixedCount} 件");
+    }
+
     [MenuItem("消灯/M3: 雰囲気（照明・フォグ）を適用")]
     public static void RunBatch()
     {
         ClearStrayEmission();
+        ClampOverbrightAlbedo();
 
         foreach (var path in Scenes)
         {

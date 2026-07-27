@@ -163,7 +163,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -640,7 +640,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.19607843, b: 0.19607843, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2255,7 +2255,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 0.54
+  m_Intensity: 0.90000004
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -5681,7 +5681,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6496,7 +6496,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 0.54
+  m_Intensity: 0.90000004
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6807,7 +6807,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 0.54
+  m_Intensity: 0.90000004
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -12726,7 +12726,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -13105,6 +13105,7 @@ GameObject:
   - component: {fileID: 690825766}
   - component: {fileID: 690825767}
   - component: {fileID: 690825768}
+  - component: {fileID: 690825769}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_2_3
   m_TagString: Untagged
@@ -13138,7 +13139,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -13205,6 +13206,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &690825769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690825765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &691227292
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14654,7 +14672,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 0.54
+  m_Intensity: 0.90000004
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -15056,6 +15074,7 @@ GameObject:
   - component: {fileID: 785720212}
   - component: {fileID: 785720213}
   - component: {fileID: 785720214}
+  - component: {fileID: 785720215}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_1_0
   m_TagString: Untagged
@@ -15089,7 +15108,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -15156,6 +15175,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &785720215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785720211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &787749794
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15349,7 +15385,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 0.80999994
+  m_Intensity: 1.3499999
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -16137,7 +16173,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -17476,7 +17512,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -18487,7 +18523,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -18582,6 +18618,7 @@ GameObject:
   - component: {fileID: 971107255}
   - component: {fileID: 971107256}
   - component: {fileID: 971107257}
+  - component: {fileID: 971107258}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_3_1
   m_TagString: Untagged
@@ -18615,7 +18652,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -18682,6 +18719,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &971107258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971107254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &978278066
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18829,6 +18883,7 @@ GameObject:
   - component: {fileID: 995992464}
   - component: {fileID: 995992465}
   - component: {fileID: 995992466}
+  - component: {fileID: 995992467}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_3_3
   m_TagString: Untagged
@@ -18862,7 +18917,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -18929,6 +18984,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &995992467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995992463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &998513075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20124,7 +20196,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -22057,7 +22129,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 0.80999994
+  m_Intensity: 1.3499999
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -24044,6 +24116,7 @@ GameObject:
   - component: {fileID: 1370858831}
   - component: {fileID: 1370858832}
   - component: {fileID: 1370858833}
+  - component: {fileID: 1370858834}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_0_1
   m_TagString: Untagged
@@ -24077,7 +24150,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -24144,6 +24217,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &1370858834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370858830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1371455789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24321,7 +24411,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -24738,7 +24828,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 0.80999994
+  m_Intensity: 1.3499999
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -25179,6 +25269,7 @@ GameObject:
   - component: {fileID: 1427973732}
   - component: {fileID: 1427973733}
   - component: {fileID: 1427973734}
+  - component: {fileID: 1427973735}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_2_1
   m_TagString: Untagged
@@ -25212,7 +25303,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -25279,6 +25370,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &1427973735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427973731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1445093732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25619,7 +25727,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -25771,6 +25879,7 @@ GameObject:
   - component: {fileID: 1466717846}
   - component: {fileID: 1466717847}
   - component: {fileID: 1466717848}
+  - component: {fileID: 1466717849}
   m_Layer: 0
   m_Name: Ceil_Bsm_Corr_1
   m_TagString: Untagged
@@ -25804,7 +25913,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -25871,6 +25980,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.3
+--- !u!114 &1466717849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466717845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1471924419
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26376,6 +26502,7 @@ GameObject:
   - component: {fileID: 1494654943}
   - component: {fileID: 1494654944}
   - component: {fileID: 1494654945}
+  - component: {fileID: 1494654946}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_0_2
   m_TagString: Untagged
@@ -26409,7 +26536,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -26476,6 +26603,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &1494654946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494654942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1495803466
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27151,7 +27295,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -27862,6 +28006,7 @@ GameObject:
   - component: {fileID: 1651037753}
   - component: {fileID: 1651037754}
   - component: {fileID: 1651037755}
+  - component: {fileID: 1651037756}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_1_2
   m_TagString: Untagged
@@ -27895,7 +28040,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -27962,6 +28107,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &1651037756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1651037752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1651476420
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28365,7 +28527,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -30839,7 +31001,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.19607843, b: 0.19607843, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -32104,6 +32266,7 @@ GameObject:
   - component: {fileID: 1853048407}
   - component: {fileID: 1853048408}
   - component: {fileID: 1853048409}
+  - component: {fileID: 1853048410}
   m_Layer: 0
   m_Name: PFix_Bsm_0
   m_TagString: Untagged
@@ -32137,7 +32300,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 0.80999994
+  m_Intensity: 1.3499999
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -32204,6 +32367,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 1.8
+--- !u!114 &1853048410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1853048406}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1862450091
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33338,6 +33518,7 @@ GameObject:
   - component: {fileID: 1910989551}
   - component: {fileID: 1910989552}
   - component: {fileID: 1910989553}
+  - component: {fileID: 1910989554}
   m_Layer: 0
   m_Name: CeilingFill_Bsm_-0.1_3_2
   m_TagString: Untagged
@@ -33371,7 +33552,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -33438,6 +33619,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
+--- !u!114 &1910989554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910989550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &1913461427
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33911,7 +34109,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 0.80999994
+  m_Intensity: 1.3499999
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -34986,6 +35184,7 @@ GameObject:
   - component: {fileID: 2022414420}
   - component: {fileID: 2022414421}
   - component: {fileID: 2022414422}
+  - component: {fileID: 2022414423}
   m_Layer: 0
   m_Name: EmergencyLight_6
   m_TagString: Untagged
@@ -35019,7 +35218,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.19607843, b: 0.19607843, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -35086,6 +35285,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.3
+--- !u!114 &2022414423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022414419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &2023062338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35233,6 +35449,7 @@ GameObject:
   - component: {fileID: 2043609074}
   - component: {fileID: 2043609075}
   - component: {fileID: 2043609076}
+  - component: {fileID: 2043609077}
   m_Layer: 0
   m_Name: Ceil_Bsm_Corr_2
   m_TagString: Untagged
@@ -35266,7 +35483,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -35333,6 +35550,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.3
+--- !u!114 &2043609077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043609073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &2043710007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35872,7 +36106,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.19607843, b: 0.19607843, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -36207,7 +36441,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -36916,6 +37150,7 @@ GameObject:
   - component: {fileID: 2129905251}
   - component: {fileID: 2129905252}
   - component: {fileID: 2129905253}
+  - component: {fileID: 2129905254}
   m_Layer: 0
   m_Name: Ceil_Bsm_MedStorage
   m_TagString: Untagged
@@ -36949,7 +37184,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.85, b: 0.65, a: 1}
-  m_Intensity: 0.135
+  m_Intensity: 0.22500001
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -37016,6 +37251,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.3
+--- !u!114 &2129905254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2129905250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
 --- !u!1001 &2129925461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37399,7 +37651,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -37598,7 +37850,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.225
+  m_Intensity: 0.375
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

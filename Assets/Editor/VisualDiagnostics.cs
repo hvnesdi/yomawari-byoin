@@ -54,6 +54,15 @@ public static class VisualDiagnostics
     /// 「明るいピクセル0件」になってしまうため、実際にはプレイモード中に
     /// PlayModeBatchRunner から呼ぶ。
     /// </summary>
+    /// <summary>
+    /// 「明るい」の閾値。周囲のタイル壁が輝度0.26、問題の矩形が0.48〜0.57、
+    /// 右の漆喰壁が0.40 なので、この値で矩形だけを拾える。
+    ///
+    /// 当初 0.72 にしていて0件になり「ツールが壊れている」と誤判断した。
+    /// 白く見えても実測は0.665止まりで、明るさは周囲との相対で見えていただけだった。
+    /// </summary>
+    public const float BrightThreshold = 0.48f;
+
     public static void IdentifyFromCamera(Camera cam)
     {
         const int W = 1280, H = 720;
@@ -70,14 +79,20 @@ public static class VisualDiagnostics
         var saved = new Material[renderers.Length][];
         var colorToName = new Dictionary<int, string>();
         var temp = new List<Material>();
+        var palette = new List<(Color32 color, int index)>();
 
         for (int i = 0; i < renderers.Length; i++)
         {
             saved[i] = renderers[i].sharedMaterials;
 
-            // 8bit×3 に収まるよう、隣り合う ID が混ざらない間隔で色を割り当てる
-            int id = i + 1;
-            var color = new Color32((byte)((id * 37) & 0xFF), (byte)((id * 91) & 0xFF), (byte)((id * 157) & 0xFF), 255);
+            // 各チャンネル 32 刻みの離散色を使う。
+            // ポストプロセスや色空間変換で多少ずれても最近傍で復元できるようにするため。
+            int id = i;
+            var color = new Color32(
+                (byte)((id       % 8) * 32 + 16),
+                (byte)((id / 8   % 8) * 32 + 16),
+                (byte)((id / 64  % 8) * 32 + 16), 255);
+            palette.Add((color, i));
             colorToName[Key(color)] = $"{Path(renderers[i].transform)}  mat={(saved[i].Length > 0 && saved[i][0] != null ? saved[i][0].name : "?")}";
 
             var m = new Material(unlit);
@@ -89,7 +104,15 @@ public static class VisualDiagnostics
             renderers[i].sharedMaterials = slots;
         }
 
+        // ID パス中はポストプロセスを切る。ビネットやトーンマッピングが乗ると
+        // 割り当てた色が変わってしまい、逆引きできなくなる。
+        var camData = cam.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+        bool prevPostProcessing = camData != null && camData.renderPostProcessing;
+        if (camData != null) camData.renderPostProcessing = false;
+
         var idPass = Render(cam, W, H);
+
+        if (camData != null) camData.renderPostProcessing = prevPostProcessing;
 
         for (int i = 0; i < renderers.Length; i++) renderers[i].sharedMaterials = saved[i];
         foreach (var m in temp) Object.DestroyImmediate(m);
@@ -103,14 +126,24 @@ public static class VisualDiagnostics
         for (int i = 0; i < bp.Length; i++)
         {
             float lum = (bp[i].r * 0.299f + bp[i].g * 0.587f + bp[i].b * 0.114f) / 255f;
-            if (lum < 0.72f) continue;
+            if (lum < BrightThreshold) continue;
             brightCount++;
-            int key = Key(ip[i]);
+
+            // 完全一致ではなく最近傍で引く（多少の色ズレを許容する）
+            int best = -1, bestDist = int.MaxValue;
+            foreach (var (color, _) in palette)
+            {
+                int dr = color.r - ip[i].r, dg = color.g - ip[i].g, db = color.b - ip[i].b;
+                int d = dr * dr + dg * dg + db * db;
+                if (d < bestDist) { bestDist = d; best = Key(color); }
+            }
+            // 32刻みなので、離れすぎているものは面の境界の混色とみなす
+            int key = bestDist <= 16 * 16 * 3 ? best : -1;
             tally[key] = tally.TryGetValue(key, out var c) ? c + 1 : 1;
         }
 
         var sb = new StringBuilder();
-        sb.AppendLine($"[明るい部分の正体] 輝度0.72超のピクセル {brightCount} / {bp.Length} " +
+        sb.AppendLine($"[明るい部分の正体] 輝度{BrightThreshold}超のピクセル {brightCount} / {bp.Length} " +
                       $"({(float)brightCount / bp.Length:P1})");
         foreach (var kv in tally.OrderByDescending(k => k.Value).Take(15))
         {
@@ -144,6 +177,60 @@ public static class VisualDiagnostics
         rt.Release();
         Object.DestroyImmediate(rt);
         return tex;
+    }
+
+    /// <summary>
+    /// PackArch 配下の壁パネルの配置を一覧する。
+    /// 白い矩形の正体が P_Wall_02/Wall_02（漆喰）と分かったので、
+    /// それがどこに、どの壁と重なって置かれているのかを確認する。
+    /// </summary>
+    [MenuItem("消灯/M3: 壁パネルの重なりを調べる")]
+    public static void ReportWallOverlaps()
+    {
+        EditorSceneManager.OpenScene("Assets/Scenes/Hospital.unity", OpenSceneMode.Single);
+
+        var panels = new List<(string name, Transform t, Bounds b)>();
+        foreach (var root in Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (!root.name.StartsWith("P_Wall")) continue;
+            var rs = root.GetComponentsInChildren<MeshRenderer>();
+            if (rs.Length == 0) continue;
+
+            var b = rs[0].bounds;
+            for (int i = 1; i < rs.Length; i++) b.Encapsulate(rs[i].bounds);
+            panels.Add((Path(root), root, b));
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"[壁パネル] {panels.Count} 枚");
+        foreach (var p in panels.OrderBy(x => x.name))
+            sb.AppendLine($"    {p.name}  pos={p.t.position}  rot={p.t.eulerAngles}  " +
+                          $"size=({p.b.size.x:F2},{p.b.size.y:F2},{p.b.size.z:F2})");
+
+        sb.AppendLine("[重なっている組み合わせ]");
+        int overlaps = 0;
+        for (int i = 0; i < panels.Count; i++)
+        for (int j = i + 1; j < panels.Count; j++)
+        {
+            if (!panels[i].b.Intersects(panels[j].b)) continue;
+
+            // 交差体積が小さい方の体積のどれくらいを占めるか
+            var a = panels[i].b; var c = panels[j].b;
+            var min = Vector3.Max(a.min, c.min);
+            var max = Vector3.Min(a.max, c.max);
+            var d = max - min;
+            float interVolume = Mathf.Max(0, d.x) * Mathf.Max(0, d.y) * Mathf.Max(0, d.z);
+            float smaller = Mathf.Min(a.size.x * a.size.y * a.size.z, c.size.x * c.size.y * c.size.z);
+            if (smaller <= 0f) continue;
+            float ratio = interVolume / smaller;
+            if (ratio < 0.05f) continue;
+
+            overlaps++;
+            sb.AppendLine($"    {ratio:P0} 重複: {panels[i].name} ∩ {panels[j].name}");
+        }
+        if (overlaps == 0) sb.AppendLine("    (重なりなし)");
+
+        Debug.Log(sb.ToString());
     }
 
     [MenuItem("消灯/M3: 見た目を診断")]
