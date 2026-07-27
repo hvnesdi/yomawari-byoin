@@ -739,7 +739,6 @@ GameObject:
   - component: {fileID: 39818258}
   - component: {fileID: 39818259}
   - component: {fileID: 39818260}
-  - component: {fileID: 39818261}
   m_Layer: 0
   m_Name: PFix_1F_2
   m_TagString: Untagged
@@ -769,7 +768,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 39818257}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
@@ -840,23 +839,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 1.8
---- !u!114 &39818261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 39818257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 0.6
-  maxIntensity: 1.2
-  flickerSpeed: 8
-  flickerChance: 0.05
-  syncWithHallucinationLevel: 1
 --- !u!1001 &49258805
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1263,7 +1245,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 74961138}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
@@ -1801,7 +1783,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 136682024}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
@@ -3024,7 +3006,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3153,7 +3135,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -4152,8 +4134,8 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.66
-  m_Range: 6
+  m_Intensity: 0.87000006
+  m_Range: 6.5
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -4534,7 +4516,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 337535571}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
@@ -5817,7 +5799,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.385
+  m_Intensity: 0.5075
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6047,8 +6029,8 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.66
-  m_Range: 6
+  m_Intensity: 0.87000006
+  m_Range: 6.5
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -6434,7 +6416,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.98
+  m_Intensity: 2.6100001
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6834,7 +6816,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.98
+  m_Intensity: 2.6100001
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -6946,7 +6928,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -7125,7 +7107,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 456598373}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
@@ -7489,7 +7471,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -7613,7 +7595,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 487647482}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
@@ -9144,7 +9126,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 644480703}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
@@ -9500,6 +9482,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 453880, guid: 695e9c39c231cfa41a135e68073a9772, type: 3}
   m_PrefabInstance: {fileID: 668461685}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &672094896
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 672094897}
+  m_Layer: 0
+  m_Name: __SetDressingApplied
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &672094897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672094896}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &673630170
 GameObject:
   m_ObjectHideFlags: 0
@@ -9544,8 +9557,8 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
-  m_Range: 5
+  m_Intensity: 0.725
+  m_Range: 6.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -11327,7 +11340,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -11631,7 +11644,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -13946,7 +13959,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1012808328}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
@@ -14386,7 +14399,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.385
+  m_Intensity: 0.5075
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -15779,8 +15792,8 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
-  m_Range: 6
+  m_Intensity: 0.725
+  m_Range: 6.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -16111,8 +16124,8 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.66
-  m_Range: 6
+  m_Intensity: 0.87000006
+  m_Range: 6.5
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -16423,7 +16436,6 @@ GameObject:
   - component: {fileID: 1172464231}
   - component: {fileID: 1172464232}
   - component: {fileID: 1172464233}
-  - component: {fileID: 1172464234}
   m_Layer: 0
   m_Name: Ceil_1F_Corr_4
   m_TagString: Untagged
@@ -16453,7 +16465,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172464230}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
@@ -16524,23 +16536,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.5
---- !u!114 &1172464234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1172464230}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 0.6
-  maxIntensity: 1.2
-  flickerSpeed: 8
-  flickerChance: 0.05
-  syncWithHallucinationLevel: 1
 --- !u!1001 &1173765903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17299,7 +17294,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -17646,7 +17641,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.98
+  m_Intensity: 2.6100001
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -18541,8 +18536,8 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
-  m_Range: 5
+  m_Intensity: 0.725
+  m_Range: 6.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -18890,7 +18885,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.385
+  m_Intensity: 0.5075
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -19298,7 +19293,6 @@ GameObject:
   - component: {fileID: 1385662862}
   - component: {fileID: 1385662861}
   - component: {fileID: 1385662863}
-  - component: {fileID: 1385662864}
   m_Layer: 0
   m_Name: Spot_Director
   m_TagString: Untagged
@@ -19313,7 +19307,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1385662860}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
@@ -19399,23 +19393,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
   baseIntensity: 0.6
---- !u!114 &1385662864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1385662860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 0.6
-  maxIntensity: 1.2
-  flickerSpeed: 8
-  flickerChance: 0.05
-  syncWithHallucinationLevel: 1
 --- !u!1001 &1405795590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19601,7 +19578,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -20723,7 +20700,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -21158,7 +21135,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -23644,8 +23621,8 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 0.92, g: 0.94, b: 1, a: 1}
-  m_Intensity: 0.66
-  m_Range: 6
+  m_Intensity: 0.87000006
+  m_Range: 6.5
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -24821,8 +24798,8 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
-  m_Range: 5
+  m_Intensity: 0.725
+  m_Range: 6.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -25837,7 +25814,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.55
+  m_Intensity: 0.725
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -26023,7 +26000,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.98
+  m_Intensity: 2.6100001
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -29819,3 +29796,4 @@ SceneRoots:
   - {fileID: 425862257}
   - {fileID: 1066012222}
   - {fileID: 678746775}
+  - {fileID: 672094897}
