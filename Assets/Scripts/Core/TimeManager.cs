@@ -56,6 +56,21 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 検証用。90分待たずにマイルストーンやエンドまで進めるため。
+    /// PlayModeSelfCheck のデバッグキーから呼ばれる。
+    /// </summary>
+    public void DebugAdvance(float seconds)
+    {
+        Remaining = Mathf.Max(0f, Remaining - seconds);
+        CheckMilestones();
+        if (Remaining <= 0f)
+        {
+            IsRunning = false;
+            GameManager.Instance?.OnTimerExpired();
+        }
+    }
+
     public float ElapsedSeconds => TotalSeconds - Remaining;
     public float ElapsedMinutes => ElapsedSeconds / 60f;
 }

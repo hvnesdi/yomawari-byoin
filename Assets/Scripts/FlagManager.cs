@@ -4,16 +4,6 @@ using UnityEngine;
 
 public enum FlagType
 {
-    // Phase 1
-    MetNurse,
-    FoundMedicine,
-    SawHallucination,
-    ExploredRoom1,
-    ExploredRoom2,
-    ExploredRoom3,
-    TriggeredAlarm,
-    FoundExit,
-    // Phase 2+
     checkedOwnRoom,
     facedMirror,
     readMedicalRecord,

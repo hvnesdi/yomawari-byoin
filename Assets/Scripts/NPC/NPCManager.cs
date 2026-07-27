@@ -121,15 +121,26 @@ public class NPCManager : MonoBehaviour
         waypointIndex = (waypointIndex + 1) % waypoints.Length;
     }
 
+    private HallucinationBand lastBand = (HallucinationBand)(-1);
+
     void UpdateAppearance()
     {
         if (npcRenderer == null) return;
+
         var band = HallucinationSystem.Instance?.GetBand("local") ?? HallucinationBand.Low;
-        npcRenderer.material = band switch
+        if (band == lastBand) return;
+
+        var mat = band switch
         {
             HallucinationBand.Low  => normalMat,
             HallucinationBand.Mid  => ghostMat,
             _                      => ghostHighMat,
         };
+
+        // マテリアル未設定のまま代入すると NPC が不可視／マゼンタになるので何もしない
+        if (mat == null) return;
+
+        npcRenderer.material = mat;
+        lastBand = band;
     }
 }

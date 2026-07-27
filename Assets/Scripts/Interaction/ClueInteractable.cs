@@ -8,6 +8,8 @@ public enum ClueType
     RecordingTape,  // ホラー演出トリガー
     Diary,          // 日記（汎用手がかり）
     Photo,          // 写真（汎用手がかり）
+    // 以下は末尾に追加すること（シーンには int で保存されているため順序を変えると壊れる）
+    FollowHallucination, // 幻覚に従う → followedHallucination フラグ（救出エンド）
 }
 
 /// <summary>
@@ -99,6 +101,14 @@ public class ClueInteractable : MonoBehaviour
             case ClueType.Photo:
                 HallucinationSystem.Instance?.ApplyModifier("local", HallucinationModifier.FoundClue);
                 UIManager.Instance?.ShowAnnouncement("写真を見た。見覚えのない人たちが写っている。");
+                examined = true;
+                break;
+
+            case ClueType.FollowHallucination:
+                // 救出エンドの分岐点。幻覚（家族）に付いていってしまう
+                fm.SetFlag(FlagType.followedHallucination, true);
+                HallucinationSystem.Instance?.RaiseLevel("local", 10f);
+                UIManager.Instance?.ShowAnnouncement("……お母さん？　こんなところまで迎えに来てくれたんだ。");
                 examined = true;
                 break;
         }

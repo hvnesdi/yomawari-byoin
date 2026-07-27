@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GameState { Lobby, Playing, Ending, Result }
 
@@ -15,15 +16,40 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    void OnEnable()  => SceneManager.sceneLoaded += OnSceneLoaded;
+    void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+
     void Start()
     {
-        // TimeManager and other systems initialize themselves via their own Awake/Start
+        // ブートストラップ生成時点で既に病院シーンが開かれている場合（エディタで
+        // Hospital*.unity から直接 Play したケース）に対応する
+        TryAutoStart(SceneManager.GetActiveScene().name);
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode) => TryAutoStart(scene.name);
+
+    /// <summary>
+    /// 病院シーンに入った時点でゲームを開始する。フロア移動では再開始しない
+    /// （State が Playing のため素通りする）。
+    /// </summary>
+    void TryAutoStart(string sceneName)
+    {
+        if (string.IsNullOrEmpty(sceneName) || !sceneName.StartsWith("Hospital")) return;
+        if (State != GameState.Lobby) return;
+
+        // FlagManager は PlayerPrefs から前回のフラグを復元してしまうため、
+        // 新しいプレイの開始時に必ずクリアする
+        FlagManager.Instance?.ResetAllFlags();
+        StartGame();
     }
 
     public void StartGame()
     {
         State = GameState.Playing;
+        Time.timeScale = 1f;   // 前回のエンドで 0 にされたままのことがある
         TimeManager.Instance?.StartTimer();
+        HorrorEventSystem.Instance?.StartAllSlowEvents();
+        UIManager.Instance?.ShowAnnouncement("院内放送：消灯まで90分です。病室にお戻りください。");
         Debug.Log("[GameManager] Game started");
     }
 

@@ -82,7 +82,21 @@ public class EnemyController : MonoBehaviour
     void CapturePlayer()
     {
         if (playerSpawnPoint != null)
+        {
+            // CharacterController が有効なままだと transform への直接代入が
+            // 打ち消されるため、転送中だけ無効化する
+            var cc = player.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
             player.position = playerSpawnPoint.position;
+            if (cc != null) cc.enabled = true;
+        }
+
+        // CLAUDE.md 捕捉処理: 幻覚レベル+20・捕捉カウント+1
+        HallucinationSystem.Instance?.ApplyModifier("local", HallucinationModifier.Captured);
+        var data = PlayerManager.Instance?.GetLocalPlayer();
+        if (data != null) data.captureCount++;
+        UIManager.Instance?.ShowAnnouncement("院内放送：病室にお戻りください。");
+
         state = State.Patrol;
         GoToNextWaypoint();
     }
