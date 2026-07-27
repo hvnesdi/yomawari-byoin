@@ -3,7 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class LightFlicker : MonoBehaviour
 {
-    [Header("Flicker Settings")]
+    // 元の強度に対する倍率。絶対値ではないので、暗く設定したライトは暗いまま揺れる。
+    // （以前は絶対値で上書きしていたため、暗くしたライトが 1.2 まで明るく戻っていた）
+    [Header("Flicker Settings (元の強度に対する倍率)")]
     public float minIntensity = 0.6f;
     public float maxIntensity = 1.2f;
     public float flickerSpeed = 8f;
@@ -49,7 +51,7 @@ public class LightFlicker : MonoBehaviour
         }
 
         float noise = Mathf.PerlinNoise(_noiseOffset + Time.time * flickerSpeed, 0f);
-        float targetBase = Mathf.Lerp(minIntensity, maxIntensity, noise) * hallucinationMultiplier;
+        float targetBase = _baseIntensity * Mathf.Lerp(minIntensity, maxIntensity, noise) * hallucinationMultiplier;
 
         _flickerTimer -= Time.deltaTime;
         if (_flickerTimer <= 0f)

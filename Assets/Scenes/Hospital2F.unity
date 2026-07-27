@@ -14,13 +14,13 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 0.022, g: 0.022, b: 0.028, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.045
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  m_AmbientSkyColor: {r: 0.038, g: 0.038, b: 0.046, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -347,6 +347,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6991338}
   - component: {fileID: 6991337}
+  - component: {fileID: 6991340}
+  - component: {fileID: 6991339}
   m_Layer: 0
   m_Name: CorrLight2F_7
   m_TagString: Untagged
@@ -365,13 +367,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -434,6 +436,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6991339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6991336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &6991340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6991336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1001 &9235027
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -588,6 +620,7 @@ GameObject:
   m_Component:
   - component: {fileID: 15932845}
   - component: {fileID: 15932846}
+  - component: {fileID: 15932847}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_0
   m_TagString: Untagged
@@ -621,13 +654,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -675,6 +708,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &15932847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15932844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &16558641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1348,6 +1394,8 @@ GameObject:
   m_Component:
   - component: {fileID: 39818258}
   - component: {fileID: 39818259}
+  - component: {fileID: 39818261}
+  - component: {fileID: 39818260}
   m_Layer: 0
   m_Name: PFix_2F_4
   m_TagString: Untagged
@@ -1381,13 +1429,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -1435,6 +1483,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &39818260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39818257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &39818261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39818257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1001 &48628946
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1771,6 +1849,8 @@ GameObject:
   m_Component:
   - component: {fileID: 74961139}
   - component: {fileID: 74961140}
+  - component: {fileID: 74961142}
+  - component: {fileID: 74961141}
   m_Layer: 0
   m_Name: Ceil_2F_PRL_8
   m_TagString: Untagged
@@ -1804,13 +1884,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -1858,6 +1938,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &74961141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74961138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &74961142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74961138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &84188378
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2915,6 +3025,7 @@ GameObject:
   m_Component:
   - component: {fileID: 136682025}
   - component: {fileID: 136682026}
+  - component: {fileID: 136682027}
   m_Layer: 0
   m_Name: Ceil_2F_PRL_-6
   m_TagString: Untagged
@@ -2948,13 +3059,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3002,6 +3113,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &136682027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136682024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &137218363
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3378,6 +3502,7 @@ GameObject:
   m_Component:
   - component: {fileID: 144709250}
   - component: {fileID: 144709249}
+  - component: {fileID: 144709251}
   m_Layer: 0
   m_Name: Spot_R_9
   m_TagString: Untagged
@@ -3396,13 +3521,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3465,6 +3590,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &144709251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144709248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &147753025
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3965,6 +4103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 180698188}
   - component: {fileID: 180698187}
+  - component: {fileID: 180698189}
   m_Layer: 0
   m_Name: Spot_L_-20
   m_TagString: Untagged
@@ -3983,13 +4122,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -4052,6 +4191,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &180698189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180698186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &183514603
 GameObject:
   m_ObjectHideFlags: 0
@@ -4062,6 +4214,8 @@ GameObject:
   m_Component:
   - component: {fileID: 183514604}
   - component: {fileID: 183514605}
+  - component: {fileID: 183514607}
+  - component: {fileID: 183514606}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_0_1
   m_TagString: Untagged
@@ -4095,13 +4249,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -4149,6 +4303,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &183514606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183514603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &183514607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183514603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &187957121
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4891,6 +5075,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224220825}
   - component: {fileID: 224220826}
+  - component: {fileID: 224220827}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_2_0
   m_TagString: Untagged
@@ -4924,13 +5109,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -4978,6 +5163,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &224220827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 224220824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &225575673
 GameObject:
   m_ObjectHideFlags: 0
@@ -4988,6 +5186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 225575674}
   - component: {fileID: 225575675}
+  - component: {fileID: 225575676}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_2_1
   m_TagString: Untagged
@@ -5021,13 +5220,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -5075,6 +5274,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &225575676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225575673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &225696071
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7286,6 +7498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 337535572}
   - component: {fileID: 337535573}
+  - component: {fileID: 337535574}
   m_Layer: 0
   m_Name: Ceil_2F_TreatB
   m_TagString: Untagged
@@ -7319,13 +7532,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -7373,6 +7586,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &337535574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337535571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &341778595
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8993,6 +9219,7 @@ GameObject:
   m_Component:
   - component: {fileID: 432722327}
   - component: {fileID: 432722328}
+  - component: {fileID: 432722329}
   m_Layer: 0
   m_Name: PFix_2F_2
   m_TagString: Untagged
@@ -9026,13 +9253,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -9080,6 +9307,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &432722329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432722326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1001 &440348077
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9510,6 +9750,7 @@ GameObject:
   m_Component:
   - component: {fileID: 443432500}
   - component: {fileID: 443432501}
+  - component: {fileID: 443432502}
   m_Layer: 0
   m_Name: PFix_2F_6
   m_TagString: Untagged
@@ -9543,13 +9784,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -9597,6 +9838,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &443432502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 443432499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1001 &448735323
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9751,6 +10005,8 @@ GameObject:
   m_Component:
   - component: {fileID: 452058210}
   - component: {fileID: 452058211}
+  - component: {fileID: 452058213}
+  - component: {fileID: 452058212}
   m_Layer: 0
   m_Name: Ceil_2F_PRL_15
   m_TagString: Untagged
@@ -9784,13 +10040,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -9838,6 +10094,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &452058212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452058209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &452058213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452058209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &453853436
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10416,6 +10702,8 @@ GameObject:
   m_Component:
   - component: {fileID: 480468378}
   - component: {fileID: 480468379}
+  - component: {fileID: 480468381}
+  - component: {fileID: 480468380}
   m_Layer: 0
   m_Name: Ceil_2F_PRL_-13
   m_TagString: Untagged
@@ -10449,13 +10737,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -10503,6 +10791,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &480468380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480468377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &480468381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480468377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &487647482
 GameObject:
   m_ObjectHideFlags: 0
@@ -10513,6 +10831,8 @@ GameObject:
   m_Component:
   - component: {fileID: 487647483}
   - component: {fileID: 487647484}
+  - component: {fileID: 487647486}
+  - component: {fileID: 487647485}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_1_3
   m_TagString: Untagged
@@ -10546,13 +10866,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -10600,6 +10920,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &487647485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487647482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &487647486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487647482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &495344827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10933,6 +11283,7 @@ GameObject:
   m_Component:
   - component: {fileID: 508560899}
   - component: {fileID: 508560900}
+  - component: {fileID: 508560901}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_7
   m_TagString: Untagged
@@ -10966,13 +11317,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -11020,6 +11371,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &508560901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508560898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &512546493
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12112,6 +12476,7 @@ GameObject:
   m_Component:
   - component: {fileID: 573918502}
   - component: {fileID: 573918503}
+  - component: {fileID: 573918504}
   m_Layer: 0
   m_Name: PMid_2F_2
   m_TagString: Untagged
@@ -12145,13 +12510,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 1.2
+  m_Intensity: 0.72
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -12199,6 +12564,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &573918504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573918501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.2
 --- !u!1001 &578928962
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13011,6 +13389,7 @@ GameObject:
   m_Component:
   - component: {fileID: 644480704}
   - component: {fileID: 644480705}
+  - component: {fileID: 644480706}
   m_Layer: 0
   m_Name: Ceil_2F_PRL_-20
   m_TagString: Untagged
@@ -13044,13 +13423,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -13098,6 +13477,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &644480706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644480703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &644988368
 GameObject:
   m_ObjectHideFlags: 0
@@ -13108,6 +13500,7 @@ GameObject:
   m_Component:
   - component: {fileID: 644988369}
   - component: {fileID: 644988370}
+  - component: {fileID: 644988371}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_2
   m_TagString: Untagged
@@ -13141,13 +13534,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -13195,6 +13588,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &644988371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644988368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &645270876
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13450,6 +13856,8 @@ GameObject:
   m_Component:
   - component: {fileID: 652253585}
   - component: {fileID: 652253584}
+  - component: {fileID: 652253587}
+  - component: {fileID: 652253586}
   m_Layer: 0
   m_Name: Spot_L_-13
   m_TagString: Untagged
@@ -13468,13 +13876,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -13537,6 +13945,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &652253586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652253583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &652253587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652253583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &655484031
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13691,6 +14129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 665594611}
   - component: {fileID: 665594612}
+  - component: {fileID: 665594613}
   m_Layer: 0
   m_Name: PMid_2F_0
   m_TagString: Untagged
@@ -13724,13 +14163,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 1.2
+  m_Intensity: 0.72
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -13778,6 +14217,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &665594613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665594610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.2
 --- !u!1001 &665903288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14130,6 +14582,7 @@ GameObject:
   m_Component:
   - component: {fileID: 673630171}
   - component: {fileID: 673630172}
+  - component: {fileID: 673630173}
   m_Layer: 0
   m_Name: Ceil_2F_PRR_9
   m_TagString: Untagged
@@ -14163,13 +14616,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -14217,6 +14670,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &673630173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 673630170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &675605340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16797,6 +17263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 787174440}
   - component: {fileID: 787174441}
+  - component: {fileID: 787174442}
   m_Layer: 0
   m_Name: PMid_2F_4
   m_TagString: Untagged
@@ -16830,13 +17297,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 1.2
+  m_Intensity: 0.72
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -16884,6 +17351,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &787174442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 787174439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.2
 --- !u!1001 &790027113
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16968,6 +17448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 794299735}
   - component: {fileID: 794299736}
+  - component: {fileID: 794299737}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_1_1
   m_TagString: Untagged
@@ -17001,13 +17482,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -17055,6 +17536,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &794299737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794299734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &795286353
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17365,6 +17859,7 @@ GameObject:
   m_Component:
   - component: {fileID: 816726771}
   - component: {fileID: 816726770}
+  - component: {fileID: 816726772}
   m_Layer: 0
   m_Name: CorrLight2F_3
   m_TagString: Untagged
@@ -17383,13 +17878,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -17452,6 +17947,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &816726772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816726769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1001 &822403039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17586,6 +18094,7 @@ GameObject:
   m_Component:
   - component: {fileID: 840999970}
   - component: {fileID: 840999971}
+  - component: {fileID: 840999972}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_1_2
   m_TagString: Untagged
@@ -17619,13 +18128,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -17673,6 +18182,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &840999972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840999969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &841211097
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20217,6 +20739,8 @@ GameObject:
   m_Component:
   - component: {fileID: 967099275}
   - component: {fileID: 967099276}
+  - component: {fileID: 967099278}
+  - component: {fileID: 967099277}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_8
   m_TagString: Untagged
@@ -20250,13 +20774,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -20304,6 +20828,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &967099277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967099274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &967099278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967099274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &970284300
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20500,6 +21054,7 @@ GameObject:
   m_Component:
   - component: {fileID: 976110771}
   - component: {fileID: 976110772}
+  - component: {fileID: 976110773}
   m_Layer: 0
   m_Name: PFix_2F_1
   m_TagString: Untagged
@@ -20533,13 +21088,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -20587,6 +21142,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &976110773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 976110770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1001 &983796443
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20783,6 +21351,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1000483266}
   - component: {fileID: 1000483267}
+  - component: {fileID: 1000483268}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_9
   m_TagString: Untagged
@@ -20816,13 +21385,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -20870,6 +21439,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1000483268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000483265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1003347915
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20950,6 +21532,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1012808329}
   - component: {fileID: 1012808330}
+  - component: {fileID: 1012808332}
+  - component: {fileID: 1012808331}
   m_Layer: 0
   m_Name: Ceil_2F_PRR_-20
   m_TagString: Untagged
@@ -20983,13 +21567,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -21037,6 +21621,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1012808331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012808328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1012808332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012808328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1012848555
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21507,6 +22121,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1026680081}
   - component: {fileID: 1026680080}
+  - component: {fileID: 1026680083}
+  - component: {fileID: 1026680082}
   m_Layer: 0
   m_Name: Spot_R_-20
   m_TagString: Untagged
@@ -21525,13 +22141,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -21594,6 +22210,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1026680082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026680079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1026680083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026680079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1027899630
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23880,6 +24526,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1133954247}
   - component: {fileID: 1133954248}
+  - component: {fileID: 1133954249}
   m_Layer: 0
   m_Name: Ceil_2F_TreatA
   m_TagString: Untagged
@@ -23913,13 +24560,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -23967,6 +24614,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1133954249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133954246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1133970578
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24269,6 +24929,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1145061875}
   - component: {fileID: 1145061876}
+  - component: {fileID: 1145061877}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_4
   m_TagString: Untagged
@@ -24302,13 +24963,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -24356,6 +25017,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1145061877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145061874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1146456400
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24440,6 +25114,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1152360699}
   - component: {fileID: 1152360700}
+  - component: {fileID: 1152360701}
   m_Layer: 0
   m_Name: PFix_2F_0
   m_TagString: Untagged
@@ -24473,13 +25148,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -24527,6 +25202,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1152360701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152360698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1001 &1155591546
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24611,6 +25299,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1158687367}
   - component: {fileID: 1158687366}
+  - component: {fileID: 1158687368}
   m_Layer: 0
   m_Name: Spot_L_15
   m_TagString: Untagged
@@ -24629,13 +25318,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -24698,6 +25387,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1158687368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1158687365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1158969046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25183,6 +25885,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1172464231}
   - component: {fileID: 1172464232}
+  - component: {fileID: 1172464234}
+  - component: {fileID: 1172464233}
   m_Layer: 0
   m_Name: Ceil_2F_PRL_1
   m_TagString: Untagged
@@ -25216,13 +25920,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -25270,6 +25974,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1172464233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172464230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1172464234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172464230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1173765903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25700,6 +26434,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1190824785}
   - component: {fileID: 1190824786}
+  - component: {fileID: 1190824788}
+  - component: {fileID: 1190824787}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_1
   m_TagString: Untagged
@@ -25733,13 +26469,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -25787,6 +26523,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1190824787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190824784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1190824788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190824784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &1190847922
 GameObject:
   m_ObjectHideFlags: 0
@@ -25797,6 +26563,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1190847924}
   - component: {fileID: 1190847923}
+  - component: {fileID: 1190847925}
   m_Layer: 0
   m_Name: CorrLight2F_5
   m_TagString: Untagged
@@ -25815,13 +26582,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -25884,6 +26651,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1190847925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190847922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1001 &1193242601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26605,6 +27385,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1222014900}
   - component: {fileID: 1222014901}
+  - component: {fileID: 1222014902}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_1_0
   m_TagString: Untagged
@@ -26638,13 +27419,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -26692,6 +27473,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1222014902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1222014899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1226251337
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27138,6 +27932,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1246572877}
   - component: {fileID: 1246572878}
+  - component: {fileID: 1246572880}
+  - component: {fileID: 1246572879}
   m_Layer: 0
   m_Name: PFix_2F_5
   m_TagString: Untagged
@@ -27171,13 +27967,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -27225,6 +28021,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1246572879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246572876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1246572880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246572876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1 &1259417479
 GameObject:
   m_ObjectHideFlags: 0
@@ -27761,6 +28587,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1292640435}
   - component: {fileID: 1292640434}
+  - component: {fileID: 1292640436}
   m_Layer: 0
   m_Name: Spot_L_8
   m_TagString: Untagged
@@ -27779,13 +28606,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -27848,6 +28675,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1292640436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292640433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &1294782759
 GameObject:
   m_ObjectHideFlags: 0
@@ -28678,6 +29518,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1330456731}
   - component: {fileID: 1330456732}
+  - component: {fileID: 1330456734}
+  - component: {fileID: 1330456733}
   m_Layer: 0
   m_Name: Ceil_2F_PRR_16
   m_TagString: Untagged
@@ -28711,13 +29553,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -28765,6 +29607,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1330456733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330456730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1330456734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330456730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &1330640987
 GameObject:
   m_ObjectHideFlags: 0
@@ -29214,6 +30086,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1349105251}
   - component: {fileID: 1349105250}
+  - component: {fileID: 1349105253}
+  - component: {fileID: 1349105252}
   m_Layer: 0
   m_Name: Spot_R_-13
   m_TagString: Untagged
@@ -29232,13 +30106,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -29301,6 +30175,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1349105252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349105249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1349105253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349105249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1353444458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29443,6 +30347,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1355501009}
   - component: {fileID: 1355501008}
+  - component: {fileID: 1355501010}
   m_Layer: 0
   m_Name: Spot_L_1
   m_TagString: Untagged
@@ -29461,13 +30366,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -29530,6 +30435,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1355501010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355501007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &1377505643
 GameObject:
   m_ObjectHideFlags: 0
@@ -29540,6 +30458,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1377505644}
   - component: {fileID: 1377505645}
+  - component: {fileID: 1377505647}
+  - component: {fileID: 1377505646}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_0_3
   m_TagString: Untagged
@@ -29573,13 +30493,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -29627,6 +30547,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1377505646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377505643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1377505647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377505643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1381005292
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29812,6 +30762,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1389869347}
   - component: {fileID: 1389869348}
+  - component: {fileID: 1389869350}
+  - component: {fileID: 1389869349}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_10
   m_TagString: Untagged
@@ -29845,13 +30797,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -29899,6 +30851,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1389869349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389869346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1389869350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389869346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1397348706
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30189,6 +31171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1402083020}
   - component: {fileID: 1402083021}
+  - component: {fileID: 1402083022}
   m_Layer: 0
   m_Name: PMid_2F_1
   m_TagString: Untagged
@@ -30222,13 +31205,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 1.2
+  m_Intensity: 0.72
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -30276,6 +31259,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1402083022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402083019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.2
 --- !u!1001 &1405795590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30360,6 +31356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1411283374}
   - component: {fileID: 1411283375}
+  - component: {fileID: 1411283376}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_11
   m_TagString: Untagged
@@ -30393,13 +31390,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -30447,6 +31444,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1411283376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411283373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1412706878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31212,6 +32222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1435019964}
   - component: {fileID: 1435019965}
+  - component: {fileID: 1435019966}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_2_3
   m_TagString: Untagged
@@ -31245,13 +32256,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -31299,6 +32310,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1435019966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1435019963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1440817473
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32605,6 +33629,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1522417519}
   - component: {fileID: 1522417520}
+  - component: {fileID: 1522417521}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_3
   m_TagString: Untagged
@@ -32638,13 +33663,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -32692,6 +33717,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1522417521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1522417518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1523602722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32777,6 +33815,7 @@ GameObject:
   - component: {fileID: 1536457151}
   - component: {fileID: 1536457150}
   - component: {fileID: 1536457152}
+  - component: {fileID: 1536457153}
   m_Layer: 0
   m_Name: Spot_R_16
   m_TagString: Untagged
@@ -32795,13 +33834,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -32881,6 +33920,19 @@ MonoBehaviour:
   flickerSpeed: 8
   flickerChance: 0.05
   syncWithHallucinationLevel: 1
+--- !u!114 &1536457153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536457149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1536819327
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33073,6 +34125,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1541890456}
   - component: {fileID: 1541890457}
+  - component: {fileID: 1541890459}
+  - component: {fileID: 1541890458}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_5
   m_TagString: Untagged
@@ -33106,13 +34160,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -33160,6 +34214,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1541890458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541890455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1541890459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541890455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1542368391
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33758,6 +34842,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1575196397}
   - component: {fileID: 1575196398}
+  - component: {fileID: 1575196399}
   m_Layer: 0
   m_Name: Ceil_2F_PRR_-13
   m_TagString: Untagged
@@ -33791,13 +34876,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -33845,6 +34930,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1575196399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575196396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1577668496
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34303,6 +35401,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1608390698}
   - component: {fileID: 1608390699}
+  - component: {fileID: 1608390701}
+  - component: {fileID: 1608390700}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_2_2
   m_TagString: Untagged
@@ -34336,13 +35436,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -34390,6 +35490,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1608390700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608390697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1608390701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608390697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &1614191102
 GameObject:
   m_ObjectHideFlags: 0
@@ -34850,6 +35980,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1650508614}
   - component: {fileID: 1650508613}
+  - component: {fileID: 1650508616}
+  - component: {fileID: 1650508615}
   m_Layer: 0
   m_Name: Spot_L_-6
   m_TagString: Untagged
@@ -34868,13 +36000,13 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.92, b: 0.78, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 60
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -34937,6 +36069,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1650508615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650508612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1650508616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650508612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1 &1652696370
 GameObject:
   m_ObjectHideFlags: 0
@@ -35964,6 +37126,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1685822196}
   - component: {fileID: 1685822195}
+  - component: {fileID: 1685822197}
   m_Layer: 0
   m_Name: CorrLight2F_1
   m_TagString: Untagged
@@ -35982,13 +37145,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -36051,6 +37214,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1685822197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1685822194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1 &1688341024
 GameObject:
   m_ObjectHideFlags: 0
@@ -36098,6 +37274,7 @@ GameObject:
   - component: {fileID: 1693725764}
   - component: {fileID: 1693725763}
   - component: {fileID: 1693725765}
+  - component: {fileID: 1693725766}
   m_Layer: 0
   m_Name: CorrLight2F_6
   m_TagString: Untagged
@@ -36116,13 +37293,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -36202,6 +37379,19 @@ MonoBehaviour:
   flickerSpeed: 8
   flickerChance: 0.05
   syncWithHallucinationLevel: 1
+--- !u!114 &1693725766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693725762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1 &1697490597
 GameObject:
   m_ObjectHideFlags: 0
@@ -36212,6 +37402,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1697490598}
   - component: {fileID: 1697490599}
+  - component: {fileID: 1697490600}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_0_2
   m_TagString: Untagged
@@ -36245,13 +37436,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -36299,6 +37490,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1697490600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697490597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1701110401
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36457,6 +37661,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1711191629}
   - component: {fileID: 1711191628}
+  - component: {fileID: 1711191630}
   m_Layer: 0
   m_Name: CorrLight2F_4
   m_TagString: Untagged
@@ -36475,13 +37680,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -36544,6 +37749,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1711191630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711191627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1001 &1717604237
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37095,6 +38313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1752823740}
   - component: {fileID: 1752823741}
+  - component: {fileID: 1752823742}
   m_Layer: 0
   m_Name: PMid_2F_3
   m_TagString: Untagged
@@ -37128,13 +38347,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.96, b: 1, a: 1}
-  m_Intensity: 1.2
+  m_Intensity: 0.72
   m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -37182,6 +38401,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1752823742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752823739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.2
 --- !u!1001 &1765311141
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38624,6 +39856,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1849815988}
   - component: {fileID: 1849815989}
+  - component: {fileID: 1849815991}
+  - component: {fileID: 1849815990}
   m_Layer: 0
   m_Name: Ceil_2F_Nurse
   m_TagString: Untagged
@@ -38657,13 +39891,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 6
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -38711,6 +39945,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1849815990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849815987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1849815991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849815987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1851688061
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39980,6 +41244,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1892567367}
   - component: {fileID: 1892567368}
+  - component: {fileID: 1892567369}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_12
   m_TagString: Untagged
@@ -40013,13 +41278,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -40067,6 +41332,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1892567369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892567366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1895392537
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40213,6 +41491,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1902162154}
   - component: {fileID: 1902162155}
+  - component: {fileID: 1902162156}
   m_Layer: 0
   m_Name: CeilingFill_2F_0.0_0_0
   m_TagString: Untagged
@@ -40246,13 +41525,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 14
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -40300,6 +41579,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1902162156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1902162153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1904597474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40384,6 +41676,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1906422340}
   - component: {fileID: 1906422341}
+  - component: {fileID: 1906422343}
+  - component: {fileID: 1906422342}
   m_Layer: 0
   m_Name: Ceil_2F_Corr_6
   m_TagString: Untagged
@@ -40417,13 +41711,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.96, b: 0.92, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.3
   m_Range: 7
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -40471,6 +41765,36 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1906422342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906422339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c206dec60788e4aa89f4e3407219d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
+  minIntensity: 0.6
+  maxIntensity: 1.2
+  flickerSpeed: 8
+  flickerChance: 0.05
+  syncWithHallucinationLevel: 1
+--- !u!114 &1906422343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906422339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.5
 --- !u!1001 &1912861782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40699,6 +42023,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1916724805}
   - component: {fileID: 1916724806}
+  - component: {fileID: 1916724807}
   m_Layer: 0
   m_Name: PFix_2F_3
   m_TagString: Untagged
@@ -40732,13 +42057,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.98, g: 0.97, b: 1, a: 1}
-  m_Intensity: 1.8
+  m_Intensity: 1.08
   m_Range: 12
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -40786,6 +42111,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1916724807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916724804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 1.8
 --- !u!1001 &1922480714
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -41442,6 +42780,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1948722394}
   - component: {fileID: 1948722393}
+  - component: {fileID: 1948722395}
   m_Layer: 0
   m_Name: CorrLight2F_0
   m_TagString: Untagged
@@ -41460,13 +42799,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -41529,6 +42868,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1948722395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1948722392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1 &1954621452
 GameObject:
   m_ObjectHideFlags: 0
@@ -41711,6 +43063,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1975330436}
   - component: {fileID: 1975330435}
+  - component: {fileID: 1975330437}
   m_Layer: 0
   m_Name: CorrLight2F_2
   m_TagString: Untagged
@@ -41729,13 +43082,13 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 0.96, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.42000002
   m_Range: 9
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -41798,6 +43151,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1975330437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975330434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df3a4bee771c02498957b7a5223e6f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightBaseIntensity
+  baseIntensity: 0.7
 --- !u!1001 &1979629685
 PrefabInstance:
   m_ObjectHideFlags: 0

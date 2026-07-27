@@ -142,6 +142,12 @@ public static class PlayModeBatchRunner
         {
             captured = true;
             CaptureGameplayScreenshot();
+
+            // プレイ中の描画を使って「明るい部分が何なのか」を集計する。
+            // エディットモードの手動レンダリングでは URP のライティングが乗らないため、
+            // ここで実行する必要がある。
+            var cam = Camera.main;
+            if (cam != null) VisualDiagnostics.IdentifyFromCamera(cam);
         }
 
         if (!endForced && elapsed >= ForceEndAt)
