@@ -16,6 +16,12 @@ public class EnemyAppearanceController : MonoBehaviour
     [Header("Renderers to swap")]
     public Renderer[] bodyRenderers;
 
+    [Header("Model swap (optional)")]
+    [Tooltip("通常時のモデル。未設定ならマテリアルの差し替えだけ行う")]
+    public GameObject guardVisual;
+    [Tooltip("幻覚レベルが高いときのモデル。細く引き伸ばした人影")]
+    public GameObject shadowVisual;
+
     [Header("Hallucination link")]
     public string playerID = "local";
     [Range(0f, 100f)] public float blendStart = 30f;
@@ -44,6 +50,15 @@ public class EnemyAppearanceController : MonoBehaviour
             return;
 
         bool shadow = level >= blendEnd;
+
+        // モデルが2種類用意されている場合は、体型ごと差し替える。
+        // 色だけ黒くするより「別のものになった」感が出る（CLAUDE.md: 黒く歪んだ人影）
+        if (guardVisual != null && shadowVisual != null)
+        {
+            if (guardVisual.activeSelf == shadow)  guardVisual.SetActive(!shadow);
+            if (shadowVisual.activeSelf != shadow) shadowVisual.SetActive(shadow);
+        }
+
         Material target = shadow ? shadowMaterial : guardMaterial;
         if (target == null) return;
 

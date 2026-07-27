@@ -15,6 +15,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 public static class HospitalPropsAndCharacters
@@ -45,6 +46,184 @@ public static class HospitalPropsAndCharacters
     {
         try { Run(); EditorApplication.Exit(0); }
         catch (System.Exception e) { Debug.LogError(e); EditorApplication.Exit(1); }
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // キャラクターの造形だけを作り直す入口。
+    // 小道具の配置には触らないので、造形を何度調整してもシーンの差分が汚れない。
+    // ──────────────────────────────────────────────────────────────────
+    [MenuItem("消灯/M4: キャラクターの造形を作り直す")]
+    public static void RebuildCharacters()
+    {
+        EnsureFolder(PropMatDir);
+        BuildPropMaterials();
+        BuildCharacterMaterials();
+        BuildCharacterShowcase();      // 1F のショーケース（スクリーンショット用）
+        RebuildInSceneCharacters();    // 実際に動く敵と NPC
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("[Characters] 造形の作り直し完了");
+    }
+
+    public static void RebuildCharactersBatch()
+    {
+        try { RebuildCharacters(); EditorApplication.Exit(0); }
+        catch (System.Exception e) { Debug.LogError(e); EditorApplication.Exit(1); }
+    }
+
+    /// <summary>ゲーム中に実際に動く敵と NPC の見た目を、新しい造形で作り直す。</summary>
+    static void RebuildInSceneCharacters()
+    {
+        string[] scenes =
+        {
+            "Assets/Scenes/Hospital.unity",
+            "Assets/Scenes/Hospital2F.unity",
+            "Assets/Scenes/Hospital3F.unity",
+            "Assets/Scenes/HospitalBasement.unity",
+        };
+
+        foreach (var path in scenes)
+        {
+            var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+            int count = 0;
+
+            foreach (var enemy in Object.FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+                count += ReplaceCharacterVisual(enemy.gameObject, _guardUniform, _guardFace, _doctorPants,
+                                                wearCap: true, gown: false);
+
+            foreach (var npc in Object.FindObjectsByType<NPCManager>(FindObjectsSortMode.None))
+                count += ReplaceCharacterVisual(npc.gameObject, _nurseUniform, _doctorSkin, _nurseUniform,
+                                                wearCap: false, gown: false);
+
+            if (count > 0)
+            {
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene);
+            }
+            Debug.Log($"[Characters] {System.IO.Path.GetFileNameWithoutExtension(path)}: {count} 体を更新");
+        }
+    }
+
+    /// <summary>既存の見た目を捨てて、新しい造形の "Visual" を付け直す。</summary>
+    static int ReplaceCharacterVisual(GameObject character, Material body, Material face, Material extra,
+                                       bool wearCap, bool gown)
+    {
+        // 古い見た目を消す。ロジック側のコンポーネントは character 本体に付いているので巻き込まれない
+        for (int i = character.transform.childCount - 1; i >= 0; i--)
+        {
+            var child = character.transform.GetChild(i);
+            if (child.GetComponentInChildren<MeshRenderer>() != null)
+                Object.DestroyImmediate(child.gameObject);
+        }
+        // 本体に直接ぶら下がっているメッシュも消す（初期版はカプセル1個だった）
+        var ownMesh = character.GetComponent<MeshRenderer>();
+        if (ownMesh != null)
+        {
+            Object.DestroyImmediate(ownMesh);
+            var filter = character.GetComponent<MeshFilter>();
+            if (filter != null) Object.DestroyImmediate(filter);
+        }
+
+        // Blender で作ったモデルがあればそれを使う。
+        // プリミティブ合成は関節ごとに部品が分かれて「可動フィギュア」に見えるため、
+        // 一体成型のメッシュに置き換える（tools/blender/make_characters.py）。
+        string modelName = wearCap ? "Guard" : (gown ? "Patient" : "Civilian");
+        var rends = new List<Renderer>();
+        var visual = InstantiateCharacterModel(modelName, body, character.transform, "Visual", rends);
+
+        if (visual == null)
+        {
+            visual = BuildHumanoid(character.name + "_Visual", character.transform.position,
+                                   character.transform.eulerAngles.y, body, face, extra,
+                                   wearCap, character.transform, out rends, gown);
+            visual.name = "Visual";
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+        }
+
+        // 敵は幻覚レベルが上がると「黒く歪んだ人影」に変わるので、
+        // 引き伸ばした体型のモデルも用意して切り替えられるようにする
+        GameObject shadowVisual = null;
+        if (wearCap)
+        {
+            var shadowRends = new List<Renderer>();
+            shadowVisual = InstantiateCharacterModel("Shadow", _shadowFigure, character.transform,
+                                                     "Visual_Shadow", shadowRends);
+            if (shadowVisual != null) shadowVisual.SetActive(false);
+        }
+
+        // 幻覚レベルで見た目を差し替えるコンポーネントに、新しいレンダラを渡す
+        var enemyAppearance = character.GetComponent<EnemyAppearanceController>();
+        if (enemyAppearance != null)
+        {
+            enemyAppearance.guardMaterial  = _guardUniform;
+            enemyAppearance.shadowMaterial = _shadowFigure;
+            enemyAppearance.bodyRenderers  = rends.ToArray();
+            enemyAppearance.guardVisual    = visual;
+            enemyAppearance.shadowVisual   = shadowVisual;
+            EditorUtility.SetDirty(enemyAppearance);
+        }
+
+        var npcAppearance = character.GetComponent<NPCAppearanceController>();
+        if (npcAppearance != null)
+        {
+            npcAppearance.normalMaterial = body;
+            npcAppearance.ghostMaterial  = _ghostBody;
+            npcAppearance.bodyRenderers  = rends.ToArray();
+            EditorUtility.SetDirty(npcAppearance);
+        }
+
+        // NPCManager は1つの Renderer を band ごとに差し替えるので、胴を渡す
+        var manager = character.GetComponent<NPCManager>();
+        if (manager != null)
+        {
+            var torso = rends.FirstOrDefault(r => r.name == "Torso") ?? rends.FirstOrDefault();
+            manager.npcRenderer = torso;
+            manager.normalMat   = body;
+            manager.ghostMat    = _ghostBody;
+            EditorUtility.SetDirty(manager);
+        }
+
+        EditorUtility.SetDirty(character);
+        return 1;
+    }
+
+    /// <summary>
+    /// Blender で書き出したキャラクターモデルを配置する。
+    /// 見つからない場合は null を返し、呼び出し側がプリミティブ合成にフォールバックする。
+    /// </summary>
+    static GameObject InstantiateCharacterModel(string modelName, Material bodyMaterial,
+                                                 Transform parent, string objectName,
+                                                 List<Renderer> rends)
+    {
+        var path = $"Assets/Models/Characters/{modelName}.fbx";
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        if (prefab == null)
+        {
+            Debug.LogWarning($"[Characters] モデルが無いのでプリミティブで代用: {path}");
+            return null;
+        }
+
+        var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+        instance.name = objectName;
+        instance.transform.localPosition = Vector3.zero;
+
+        // localRotation と localScale は絶対に触らないこと。
+        // FBX インポーターは Blender(Z-up・メートル) と Unity(Y-up・センチ) の差を
+        // ルートの回転とスケール(=100)で補正している。ここで identity / one に
+        // 上書きすると、モデルが 1/100 サイズになったり床に倒れたりする。
+        // 実際に両方とも踏んだ。向きと位置は親のキャラクター本体が持っているので、
+        // モデル側はインポーターが決めた姿勢のままでよい。
+
+        foreach (var r in instance.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            var slots = new Material[Mathf.Max(1, r.sharedMaterials.Length)];
+            for (int i = 0; i < slots.Length; i++) slots[i] = bodyMaterial;
+            r.sharedMaterials = slots;
+            r.shadowCastingMode = ShadowCastingMode.On;
+            rends.Add(r);
+        }
+        return instance;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -392,8 +571,22 @@ public static class HospitalPropsAndCharacters
     // ──────────────────────────────────────────────────────────────────
     // Character composite (humanoid built from primitives)
     // ──────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// プリミティブ合成の人型。
+    ///
+    /// 旧版は胴と腰が巨大なカプセル2個で融合し、脚がその中に埋まっていたため、
+    /// 全体が「丸い塊」に見えてホラーとして機能していなかった。
+    /// 造形の方針を silhouette 重視に変更:
+    ///   - 総身長 1.80m 前後。人間よりわずかに高く細い＝「何かおかしい」を出す
+    ///   - なで肩・腕は長く、手首が腿の中ほどまで垂れる
+    ///   - 首を見せる（首なしの塊はコミカルに見える）
+    ///   - 脚を左右に分け、隙間から向こうが見える
+    ///   - わずかな前傾と左右非対称で、直立不動のマネキン感を消す
+    ///
+    /// gown=true で患者衣（裾の広がった筒）になり、脚は裾から下だけ見える。
+    /// </summary>
     static GameObject BuildHumanoid(string name, Vector3 pos, float yaw, Material body, Material face, Material extra,
-                                     bool wearCap, Transform parent, out List<Renderer> bodyRends)
+                                     bool wearCap, Transform parent, out List<Renderer> bodyRends, bool gown = false)
     {
         var root = new GameObject(name);
         root.transform.SetParent(parent, true);
@@ -401,79 +594,160 @@ public static class HospitalPropsAndCharacters
         root.transform.rotation = Quaternion.Euler(0, yaw, 0);
 
         bodyRends = new List<Renderer>();
-        // Torso - capsule
-        var torso = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        torso.name = "Torso";
-        torso.transform.SetParent(root.transform, false);
-        torso.transform.localPosition = new Vector3(0, 1.10f, 0);
-        torso.transform.localScale = new Vector3(0.55f, 0.45f, 0.32f);
-        torso.GetComponent<MeshRenderer>().sharedMaterial = body;
-        bodyRends.Add(torso.GetComponent<Renderer>());
-        Object.DestroyImmediate(torso.GetComponent<Collider>());
-        // Lower body (pants)
-        var lower = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        lower.name = "Lower";
-        lower.transform.SetParent(root.transform, false);
-        lower.transform.localPosition = new Vector3(0, 0.45f, 0);
-        lower.transform.localScale = new Vector3(0.50f, 0.45f, 0.30f);
-        lower.GetComponent<MeshRenderer>().sharedMaterial = extra != null ? extra : body;
-        bodyRends.Add(lower.GetComponent<Renderer>());
-        Object.DestroyImmediate(lower.GetComponent<Collider>());
-        // Arms
+
+        // Blender で書き出したモデルがあればそちらを使う。
+        // プリミティブ合成は関節ごとに部品が分かれ「可動フィギュア」に見えるため、
+        // 一体成型のメッシュを優先する（tools/blender/make_characters.py）。
+        var modelName = wearCap ? "Guard" : (gown ? "Patient" : "Civilian");
+        if (InstantiateCharacterModel(modelName, body, root.transform, "Model", bodyRends) != null)
+            return root;
+
+        var limbMat = extra != null ? extra : body;
+
+        // 名前から決定的に個体差を作る（実行のたびに変わると差分が汚れるため乱数は使わない）
+        int hash = 0;
+        foreach (var ch in name) hash = hash * 31 + ch;
+        float vary = ((hash & 0xFF) / 255f - 0.5f) * 2f;      // -1..1
+        float lean = 0.02f + vary * 0.012f;                    // 前傾の深さ
+        float heightScale = 1f + vary * 0.03f;                 // 身長の個体差
+
+        // ── 主要な関節位置（ローカル空間・+Z が正面）──
+        float hipY = 0.92f, kneeY = 0.49f, ankleY = 0.08f;
+        float hipX = 0.085f;
+
+        var pelvis    = new Vector3(0f, 0.96f, lean * 0.3f);
+        var chestLow  = new Vector3(0f, 1.02f, lean * 0.5f);
+        var chestHigh = new Vector3(0f, 1.40f, lean);
+        var neckTop   = new Vector3(0f, 1.53f, lean * 1.2f);
+        var headPos   = new Vector3(0f, 1.645f, lean * 1.35f);
+
+        // ── 脚 ──
         for (int s = -1; s <= 1; s += 2)
         {
-            var arm = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            arm.name = "Arm_" + (s < 0 ? "L" : "R");
-            arm.transform.SetParent(root.transform, false);
-            arm.transform.localPosition = new Vector3(0.28f * s, 1.05f, 0);
-            arm.transform.localScale = new Vector3(0.13f, 0.35f, 0.13f);
-            arm.GetComponent<MeshRenderer>().sharedMaterial = body;
-            bodyRends.Add(arm.GetComponent<Renderer>());
-            Object.DestroyImmediate(arm.GetComponent<Collider>());
+            float x = hipX * s;
+            // 左右で膝の位置をわずかにずらす（完全な左右対称は不自然に見える）
+            float knock = 0.008f * s * (vary >= 0f ? 1f : -1f);
+            Limb($"Thigh_{(s < 0 ? "L" : "R")}", new Vector3(x, hipY, 0f),
+                 new Vector3(x + knock, kneeY, 0.012f), 0.145f, limbMat, root.transform, bodyRends);
+            Limb($"Shin_{(s < 0 ? "L" : "R")}", new Vector3(x + knock, kneeY, 0.012f),
+                 new Vector3(x, ankleY, -0.01f), 0.115f, limbMat, root.transform, bodyRends);
+
+            var foot = Box($"Foot_{(s < 0 ? "L" : "R")}", new Vector3(x, 0.032f, 0.055f),
+                           new Vector3(0.10f, 0.062f, 0.225f), limbMat, root.transform, bodyRends);
+            foot.transform.localRotation = Quaternion.Euler(0f, 6f * s, 0f);
         }
-        // Legs
+
+        // ── 骨盤・胴 ──
+        Capsule("Pelvis", pelvis, new Vector3(0.26f, 0.085f, 0.185f), limbMat, root.transform, bodyRends);
+        var torso = Limb("Torso", chestLow, chestHigh, 0.315f, body, root.transform, bodyRends);
+        // 胸は前後に薄く。カプセルのままだと樽になる
+        torso.transform.localScale = new Vector3(0.315f, torso.transform.localScale.y, 0.215f);
+
+        // 患者衣: 裾の広がった筒。脚は裾から下だけ見える
+        if (gown)
+        {
+            Cyl("Gown_Upper", new Vector3(0f, 0.86f, lean * 0.2f), new Vector3(0.34f, 0.13f, 0.26f),
+                body, root.transform, bodyRends);
+            Cyl("Gown_Hem", new Vector3(0f, 0.62f, lean * 0.1f), new Vector3(0.40f, 0.13f, 0.32f),
+                body, root.transform, bodyRends);
+        }
+
+        // ── 肩・腕 ──
+        // 手首が腿の中ほどまで垂れる長さにする。人間の標準より少し長い
         for (int s = -1; s <= 1; s += 2)
         {
-            var leg = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            leg.name = "Leg_" + (s < 0 ? "L" : "R");
-            leg.transform.SetParent(root.transform, false);
-            leg.transform.localPosition = new Vector3(0.13f * s, 0.18f, 0);
-            leg.transform.localScale = new Vector3(0.15f, 0.20f, 0.15f);
-            leg.GetComponent<MeshRenderer>().sharedMaterial = extra != null ? extra : body;
-            bodyRends.Add(leg.GetComponent<Renderer>());
-            Object.DestroyImmediate(leg.GetComponent<Collider>());
+            string side = s < 0 ? "L" : "R";
+            var shoulder = new Vector3(0.175f * s, 1.37f, lean * 0.9f);
+            // 左右で肘の開きを変えて非対称にする
+            float flare = s < 0 ? 0.030f : 0.018f;
+            var elbow    = new Vector3((0.185f + flare) * s, 1.055f, lean + 0.025f);
+            var wrist    = new Vector3((0.165f + flare * 0.6f) * s, 0.735f, lean + 0.055f);
+
+            Capsule($"Shoulder_{side}", shoulder, new Vector3(0.14f, 0.045f, 0.14f), body, root.transform, bodyRends);
+            Limb($"UpperArm_{side}", shoulder, elbow, 0.108f, body, root.transform, bodyRends);
+            Limb($"Forearm_{side}", elbow, wrist, 0.092f, body, root.transform, bodyRends);
+            Capsule($"Hand_{side}", wrist + new Vector3(0f, -0.045f, 0.005f),
+                    new Vector3(0.085f, 0.055f, 0.055f), face != null ? face : body, root.transform, bodyRends);
         }
-        // Head
+
+        // ── 首・頭 ──
+        Cyl("Neck", (chestHigh + neckTop) * 0.5f, new Vector3(0.082f, 0.068f, 0.082f),
+            face != null ? face : body, root.transform, bodyRends);
+
         var head = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         head.name = "Head";
         head.transform.SetParent(root.transform, false);
-        head.transform.localPosition = new Vector3(0, 1.62f, 0);
-        head.transform.localScale = Vector3.one * 0.26f;
+        head.transform.localPosition = headPos;
+        // 縦長の卵形。真球だと人形の頭に見える
+        head.transform.localScale = new Vector3(0.185f, 0.235f, 0.200f);
+        head.transform.localRotation = Quaternion.Euler(6f, 4f * (vary >= 0f ? 1f : -1f), 0f);
         head.GetComponent<MeshRenderer>().sharedMaterial = face != null ? face : body;
         bodyRends.Add(head.GetComponent<Renderer>());
         Object.DestroyImmediate(head.GetComponent<Collider>());
+
         if (wearCap)
         {
-            // Cylinder cap, slightly wider
-            var cap = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            cap.name = "Cap";
-            cap.transform.SetParent(root.transform, false);
-            cap.transform.localPosition = new Vector3(0, 1.74f, 0);
-            cap.transform.localScale = new Vector3(0.28f, 0.04f, 0.28f);
-            cap.GetComponent<MeshRenderer>().sharedMaterial = _guardCap;
-            bodyRends.Add(cap.GetComponent<Renderer>());
-            Object.DestroyImmediate(cap.GetComponent<Collider>());
-            // Cap brim
-            var brim = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            brim.name = "CapBrim";
-            brim.transform.SetParent(root.transform, false);
-            brim.transform.localPosition = new Vector3(0, 1.71f, 0.10f);
-            brim.transform.localScale = new Vector3(0.34f, 0.012f, 0.18f);
-            brim.GetComponent<MeshRenderer>().sharedMaterial = _guardCap;
-            bodyRends.Add(brim.GetComponent<Renderer>());
-            Object.DestroyImmediate(brim.GetComponent<Collider>());
+            Cyl("Cap", new Vector3(0f, 1.755f, lean * 1.35f), new Vector3(0.205f, 0.035f, 0.205f),
+                _guardCap, root.transform, bodyRends);
+            var brim = Box("CapBrim", new Vector3(0f, 1.735f, lean * 1.35f + 0.115f),
+                           new Vector3(0.215f, 0.016f, 0.115f), _guardCap, root.transform, bodyRends);
+            brim.transform.localRotation = Quaternion.Euler(-6f, 0f, 0f);
         }
+
+        // 身長の個体差は最後にまとめて掛ける
+        if (!Mathf.Approximately(heightScale, 1f))
+            root.transform.localScale = new Vector3(1f, heightScale, 1f);
+
         return root;
+    }
+
+    /// <summary>a から b へ伸びるカプセル。手足の姿勢を関節位置で書けるようにするためのヘルパー。</summary>
+    static GameObject Limb(string name, Vector3 a, Vector3 b, float diameter, Material mat,
+                            Transform parent, List<Renderer> rends)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name;
+        go.transform.SetParent(parent, false);
+
+        var dir = b - a;
+        float length = dir.magnitude;
+        go.transform.localPosition = (a + b) * 0.5f;
+        go.transform.localRotation = length > 1e-4f
+            ? Quaternion.FromToRotation(Vector3.up, dir / length)
+            : Quaternion.identity;
+        // Unity のカプセルは既定で高さ2・半径0.5。scale.y が半分の長さになる
+        go.transform.localScale = new Vector3(diameter, Mathf.Max(length * 0.5f, diameter * 0.5f), diameter);
+
+        go.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        rends.Add(go.GetComponent<Renderer>());
+        Object.DestroyImmediate(go.GetComponent<Collider>());
+        return go;
+    }
+
+    static GameObject Capsule(string name, Vector3 pos, Vector3 scale, Material mat,
+                               Transform parent, List<Renderer> rends)
+        => Primitive(PrimitiveType.Capsule, name, pos, scale, mat, parent, rends);
+
+    static GameObject Cyl(string name, Vector3 pos, Vector3 scale, Material mat,
+                           Transform parent, List<Renderer> rends)
+        => Primitive(PrimitiveType.Cylinder, name, pos, scale, mat, parent, rends);
+
+    static GameObject Box(string name, Vector3 pos, Vector3 scale, Material mat,
+                           Transform parent, List<Renderer> rends)
+        => Primitive(PrimitiveType.Cube, name, pos, scale, mat, parent, rends);
+
+    static GameObject Primitive(PrimitiveType type, string name, Vector3 pos, Vector3 scale, Material mat,
+                                 Transform parent, List<Renderer> rends)
+    {
+        var go = GameObject.CreatePrimitive(type);
+        go.name = name;
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = pos;
+        go.transform.localScale = scale;
+        go.GetComponent<MeshRenderer>().sharedMaterial = mat;
+        rends.Add(go.GetComponent<Renderer>());
+        Object.DestroyImmediate(go.GetComponent<Collider>());
+        return go;
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -637,7 +911,7 @@ public static class HospitalPropsAndCharacters
         // ── NPC: doctor (normal) and ghost preview at z=-15 ──
         List<Renderer> docR, ghostR;
         var doctorGO = BuildHumanoid("NPC_Doctor_Preview",
-            new Vector3(-1.0f, 0f, -10f), 0f, _doctorCoat, _doctorSkin, _doctorPants,
+            new Vector3( 0.45f, 0f, -10f), 0f, _doctorCoat, _doctorSkin, _doctorPants,
             wearCap: false, parent: root, out docR);
         var npcCtrlD = doctorGO.AddComponent<NPCAppearanceController>();
         npcCtrlD.kind = NPCAppearanceController.NPCKind.Doctor;
@@ -648,7 +922,7 @@ public static class HospitalPropsAndCharacters
         npcCtrlD.forceGhost = false;
 
         var ghostGO = BuildHumanoid("NPC_Ghost_Preview",
-            new Vector3( 1.0f, 0f, -10f), 0f, _ghostBody, _ghostBody, _ghostBody,
+            new Vector3( 1.40f, 0f, -10f), 0f, _ghostBody, _ghostBody, _ghostBody,
             wearCap: false, parent: root, out ghostR);
         var npcCtrlG = ghostGO.AddComponent<NPCAppearanceController>();
         npcCtrlG.kind = NPCAppearanceController.NPCKind.Doctor;
@@ -662,8 +936,8 @@ public static class HospitalPropsAndCharacters
         // Also a real "patient" NPC and "nurse" NPC nearby so the demo is richer
         List<Renderer> patR, nurseR;
         var patientGO = BuildHumanoid("NPC_Patient_Preview",
-            new Vector3(-2.5f, 0f, -10f), 0f, _patientGown, _doctorSkin, _patientGown,
-            wearCap: false, parent: root, out patR);
+            new Vector3(-1.40f, 0f, -10f), 0f, _patientGown, _doctorSkin, _patientGown,
+            wearCap: false, parent: root, out patR, gown: true);
         var npcP = patientGO.AddComponent<NPCAppearanceController>();
         npcP.kind = NPCAppearanceController.NPCKind.Patient;
         npcP.normalMaterial = _patientGown;
@@ -673,7 +947,7 @@ public static class HospitalPropsAndCharacters
         npcP.forceGhost = false;
 
         var nurseGO = BuildHumanoid("NPC_Nurse_Preview",
-            new Vector3(-1.7f, 0f, -10f), 0f, _nurseUniform, _doctorSkin, _nurseUniform,
+            new Vector3(-0.50f, 0f, -10f), 0f, _nurseUniform, _doctorSkin, _nurseUniform,
             wearCap: false, parent: root, out nurseR);
         var npcN = nurseGO.AddComponent<NPCAppearanceController>();
         npcN.kind = NPCAppearanceController.NPCKind.Nurse;
@@ -718,12 +992,31 @@ public static class HospitalPropsAndCharacters
                                     "NPC_Patient_Preview", "NPC_Nurse_Preview" });
 
             // NPC showcase: hide the enemy half only.
+            // NPC は x = -2.5〜+1.0 に並ぶので、4体すべてが入るようカメラを左へ寄せる
             CaptureScene("Assets/Scenes/Hospital.unity",
                 outDir + "/NPC_Showcase.png",
-                new Vector3(0f, 1.55f, -7f), new Vector3(3f, 180f, 0f),
+                new Vector3(-0.75f, 1.5f, -7.2f), new Vector3(3f, 180f, 0f),
                 hideNames: new[] { "Enemy_Guard_Preview", "Enemy_Shadow_Preview" });
 
-            Debug.Log("=== Four screenshots captured ===");
+            // 同じ構図でデカールだけ消したものを撮る。
+            // 壁と床に散る灰色の矩形がデカール由来かどうかを、差分で確定させるため
+            // （推測で追って何度も外したので、以後は必ず実測で切り分ける）。
+            CaptureScene("Assets/Scenes/Hospital.unity",
+                outDir + "/NPC_Showcase_NoDecals.png",
+                new Vector3(-0.75f, 1.5f, -7.2f), new Vector3(3f, 180f, 0f),
+                hideRoots: new[] { "Decals_1F" },
+                hideNames: new[] { "Enemy_Guard_Preview", "Enemy_Shadow_Preview" });
+
+            // 風景確認用。3F 隔離病棟と地下は雰囲気の要なので個別に撮る
+            CaptureScene("Assets/Scenes/Hospital3F.unity",
+                outDir + "/3F_Scenery.png",
+                new Vector3(0f, 1.65f, -14f), new Vector3(4f, 0f, 0f));
+
+            CaptureScene("Assets/Scenes/HospitalBasement.unity",
+                outDir + "/Basement_Scenery.png",
+                new Vector3(0f, 1.65f, 8f), new Vector3(4f, 180f, 0f));
+
+            Debug.Log("=== screenshots captured ===");
             EditorApplication.Exit(0);
         }
         catch (System.Exception e)

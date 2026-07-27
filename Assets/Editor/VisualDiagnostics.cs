@@ -233,6 +233,155 @@ public static class VisualDiagnostics
         Debug.Log(sb.ToString());
     }
 
+    /// <summary>
+    /// 任意の視点について「通常描画」と「オブジェクトID描画」を PNG で書き出し、
+    /// 色とオブジェクト名の対応表を CSV で残す。
+    ///
+    /// これがあれば「この座標に写っているのは何か」を Unity を再実行せずに
+    /// オフラインで何度でも調べられる。見た目の不具合を推測で追って外し続けたので、
+    /// 実測で切り分けられる状態を常に持っておくためのツール。
+    ///
+    /// 出力: Screenshots/ids_&lt;name&gt;_beauty.png / _ids.png / _palette.csv
+    /// </summary>
+    public static void DumpShowcaseIds()
+    {
+        DumpIds("Assets/Scenes/Hospital.unity", "npc",
+                new Vector3(-0.75f, 1.5f, -7.2f), new Vector3(3f, 180f, 0f));
+        DumpIds("Assets/Scenes/Hospital3F.unity", "3f",
+                new Vector3(0f, 1.65f, -14f), new Vector3(4f, 0f, 0f));
+
+        if (Application.isBatchMode) EditorApplication.Exit(0);
+    }
+
+    static void DumpIds(string scenePath, string label, Vector3 camPos, Vector3 camEuler)
+    {
+        EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+
+        var camGo = new GameObject("__IdDumpCamera");
+        var cam = camGo.AddComponent<Camera>();
+        cam.transform.position = camPos;
+        cam.transform.eulerAngles = camEuler;
+        cam.fieldOfView = 60f;
+        cam.nearClipPlane = 0.05f;
+        cam.farClipPlane = 200f;
+
+        const int W = 1280, H = 720;
+        const string OutDir = "Screenshots";
+        System.IO.Directory.CreateDirectory(OutDir);
+
+        var beauty = Render(cam, W, H);
+        System.IO.File.WriteAllBytes($"{OutDir}/ids_{label}_beauty.png", beauty.EncodeToPNG());
+
+        var renderers = Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                              .Where(r => Vector3.Distance(camPos, r.bounds.center) < 60f)
+                              .ToArray();
+
+        var unlit = Shader.Find("Universal Render Pipeline/Unlit");
+        var saved = new Material[renderers.Length][];
+        var temp = new List<Material>();
+        var csv = new StringBuilder("r,g,b,path,material\n");
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            saved[i] = renderers[i].sharedMaterials;
+
+            var color = new Color32(
+                (byte)((i       % 8) * 32 + 16),
+                (byte)((i / 8   % 8) * 32 + 16),
+                (byte)((i / 64  % 8) * 32 + 16), 255);
+
+            var matName = saved[i].Length > 0 && saved[i][0] != null ? saved[i][0].name : "?";
+            csv.AppendLine($"{color.r},{color.g},{color.b},\"{Path(renderers[i].transform)}\",\"{matName}\"");
+
+            var m = new Material(unlit);
+            m.SetColor("_BaseColor", color);
+            temp.Add(m);
+
+            var slots = new Material[Mathf.Max(1, saved[i].Length)];
+            for (int s = 0; s < slots.Length; s++) slots[s] = m;
+            renderers[i].sharedMaterials = slots;
+        }
+
+        var camData = cam.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+        if (camData != null) camData.renderPostProcessing = false;
+
+        var ids = Render(cam, W, H);
+        System.IO.File.WriteAllBytes($"{OutDir}/ids_{label}_ids.png", ids.EncodeToPNG());
+        System.IO.File.WriteAllText($"{OutDir}/ids_{label}_palette.csv", csv.ToString());
+
+        for (int i = 0; i < renderers.Length; i++) renderers[i].sharedMaterials = saved[i];
+        foreach (var m in temp) Object.DestroyImmediate(m);
+        Object.DestroyImmediate(camGo);
+        Object.DestroyImmediate(beauty);
+        Object.DestroyImmediate(ids);
+
+        Debug.Log($"[VisualDiagnostics] ID ダンプ: {label} ({renderers.Length} レンダラ)");
+    }
+
+    /// <summary>
+    /// キャラクターが「シーンには居るのに映らない」ときに、
+    /// 位置・有効状態・レンダラ・マテリアル・バウンズを一気に出す。
+    /// </summary>
+    [MenuItem("消灯/M4: キャラクターの状態を出力")]
+    public static void ReportCharacters()
+    {
+        EditorSceneManager.OpenScene("Assets/Scenes/Hospital.unity", OpenSceneMode.Single);
+
+        var sb = new StringBuilder();
+        sb.AppendLine("[キャラクターの状態]");
+
+        var roots = new List<Transform>();
+        foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            var n = t.name;
+            if (n.Contains("Preview") || n == "Enemy" || n == "NPC_Nurse")
+                roots.Add(t);
+        }
+
+        foreach (var root in roots.OrderBy(r => r.name))
+        {
+            sb.AppendLine($"  ── {root.name}  pos={root.position}  active={root.gameObject.activeInHierarchy}");
+
+            var renderers = root.GetComponentsInChildren<MeshRenderer>(true);
+            if (renderers.Length == 0)
+            {
+                sb.AppendLine("      レンダラ無し（見た目が付いていない）");
+                continue;
+            }
+            foreach (var r in renderers.Take(4))
+            {
+                var mat = r.sharedMaterial != null ? r.sharedMaterial.name : "(null)";
+                sb.AppendLine($"      {r.name}  enabled={r.enabled} activeInHierarchy={r.gameObject.activeInHierarchy}");
+                sb.AppendLine($"        mat={mat} bounds.center={r.bounds.center} size={r.bounds.size}");
+            }
+            if (renderers.Length > 4) sb.AppendLine($"      …他 {renderers.Length - 4} レンダラ");
+        }
+
+        // FBX アセットそのものの構造も見る。
+        // 単一オブジェクトの FBX と複数オブジェクトの FBX で
+        // Unity が作るルートの扱いが変わるため、そこを疑う。
+        sb.AppendLine("[FBX アセットの構造]");
+        foreach (var name in new[] { "Patient", "Civilian", "Guard", "Shadow" })
+        {
+            var path = $"Assets/Models/Characters/{name}.fbx";
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (asset == null) { sb.AppendLine($"  {name}: 読み込めない"); continue; }
+
+            sb.AppendLine($"  ── {name}.fbx  root='{asset.name}' scale={asset.transform.localScale}");
+            foreach (var f in asset.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var m = f.sharedMesh;
+                sb.AppendLine($"      {f.name}  localScale={f.transform.localScale} " +
+                              $"mesh={(m == null ? "(null)" : $"{m.vertexCount}頂点 {m.triangles.Length / 3}三角形 bounds={m.bounds.size}")}");
+            }
+            if (asset.GetComponentsInChildren<MeshFilter>(true).Length == 0)
+                sb.AppendLine("      MeshFilter 無し");
+        }
+
+        Debug.Log(sb.ToString());
+        if (Application.isBatchMode) EditorApplication.Exit(0);
+    }
+
     [MenuItem("消灯/M3: 見た目を診断")]
     public static void RunBatch()
     {
