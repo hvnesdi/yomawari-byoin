@@ -272,8 +272,14 @@ public static class VisualDiagnostics
         var beauty = Render(cam, W, H);
         System.IO.File.WriteAllBytes($"{OutDir}/ids_{label}_beauty.png", beauty.EncodeToPNG());
 
+        // 半透明・非表示のレンダラは除外する。
+        // ID パスは全レンダラに不透明の単色を強制するため、通常は見えないメッシュまで
+        // 写ってしまい、手前にある別物として誤検出される。
+        // （実際、3F の白い領域を「車椅子の部品」と誤って特定した）
         var renderers = Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                              .Where(r => r.enabled)
                               .Where(r => Vector3.Distance(camPos, r.bounds.center) < 60f)
+                              .Where(r => r.sharedMaterial == null || r.sharedMaterial.renderQueue < 3000)
                               .ToArray();
 
         var unlit = Shader.Find("Universal Render Pipeline/Unlit");
