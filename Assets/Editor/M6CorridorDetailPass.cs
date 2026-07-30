@@ -38,7 +38,7 @@ public static class M6CorridorDetailPass
     public static void RunBatch()
     {
         var models = new Dictionary<string, GameObject>();
-        foreach (var name in new[] { "Pipe_Run", "Vent_Grille", "Wall_Sign", "Radiator" })
+        foreach (var name in new[] { "Pipe_Run", "Vent_Grille", "Wall_Sign", "Radiator", "Skirting", "Cornice" })
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{ModelDir}/{name}.fbx");
             if (prefab == null) { Debug.LogError($"[Detail] {name}.fbx が無い"); continue; }
@@ -59,6 +59,9 @@ public static class M6CorridorDetailPass
             ["Vent_Grille"] = FindMaterial("Prop_Vent_Galv", "Prop_ExtMetal", "Mat_Bed_Metal_01"),
             ["Wall_Sign"]   = FindMaterial("Prop_Sign_Plate", "Prop_Wood", "Mat_Bed_Metal_01"),
             ["Radiator"]    = FindMaterial("Prop_Radiator_Enamel", "Mat_Bed_Metal_01"),
+            // 巾木と見切りは壁と同系の塗装。目立たせるものではない
+            ["Skirting"]    = FindMaterial("Prop_Sign_Plate", "Prop_Wood"),
+            ["Cornice"]     = FindMaterial("Prop_Sign_Plate", "Prop_Wood"),
         };
 
         foreach (var path in Scenes)
@@ -118,6 +121,23 @@ public static class M6CorridorDetailPass
         int placed = 0;
         int wallIndex = 0;
 
+        // 同種の設備が近接して並ばないよう、置いた位置を覚えて距離で弾く。
+        // wallIndex % N だけで選ぶと、隣り合う壁パネルが連続で当たったときに
+        // 同じ場所へ集中する（地下の右壁に案内表示が縦3枚重なった原因）。
+        var lastPlaced = new Dictionary<string, List<Vector3>>();
+        bool FarEnough(string kind, Vector3 pos, float minDistance)
+        {
+            if (!lastPlaced.TryGetValue(kind, out var list))
+            {
+                lastPlaced[kind] = new List<Vector3> { pos };
+                return true;
+            }
+            foreach (var p in list)
+                if (Vector3.Distance(p, pos) < minDistance) return false;
+            list.Add(pos);
+            return true;
+        }
+
         foreach (var wall in walls)
         {
             var b = wall.bounds;
@@ -143,34 +163,68 @@ public static class M6CorridorDetailPass
             if (wallIndex % 5 == 0 && models.ContainsKey("Vent_Grille"))
             {
                 var pos = face + Vector3.up * (b.max.y - 0.45f);
-                Place(models["Vent_Grille"], pos, faceRotation, root, Mat(mats, "Vent_Grille"), $"Vent_{placed}");
-                placed++;
+                if (FarEnough("vent", pos, 7f))
+                {
+                    Place(models["Vent_Grille"], pos, faceRotation, root, Mat(mats, "Vent_Grille"), $"Vent_{placed}");
+                    placed++;
+                }
             }
 
             // 案内表示: 目線の高さ
             if (wallIndex % 7 == 3 && models.ContainsKey("Wall_Sign"))
             {
                 var pos = face + Vector3.up * (b.min.y + 1.75f);
-                Place(models["Wall_Sign"], pos, faceRotation, root, Mat(mats, "Wall_Sign"), $"Sign_{placed}");
-                placed++;
+                if (FarEnough("sign", pos, 10f))
+                {
+                    Place(models["Wall_Sign"], pos, faceRotation, root, Mat(mats, "Wall_Sign"), $"Sign_{placed}");
+                    placed++;
+                }
             }
 
             // ラジエーター: 床際。幅が要るので広い壁だけ
             if (wallIndex % 6 == 1 && width > 2.0f && models.ContainsKey("Radiator"))
             {
                 var pos = face + Vector3.up * (b.min.y + 0.42f);
-                Place(models["Radiator"], pos, faceRotation, root, Mat(mats, "Radiator"), $"Radiator_{placed}");
-                placed++;
+                if (FarEnough("radiator", pos, 9f))
+                {
+                    Place(models["Radiator"], pos, faceRotation, root, Mat(mats, "Radiator"), $"Radiator_{placed}");
+                    placed++;
+                }
+            }
+
+            // 巾木と見切り: 壁の全長に 1m 刻みで並べる。
+            // 間引かない。実際の室内では途切れずに回っているので、
+            // 抜けているとかえって不自然になる。
+            var alongWall = normal == Vector3.right ? Vector3.forward : Vector3.right;
+            int segments = Mathf.Max(1, Mathf.RoundToInt(width));
+            float step = width / segments;
+
+            for (int i = 0; i < segments; i++)
+            {
+                float offset = -width * 0.5f + step * (i + 0.5f);
+                var basePos = face + alongWall * offset;
+
+                if (models.ContainsKey("Skirting"))
+                {
+                    Place(models["Skirting"], basePos + Vector3.up * b.min.y, faceRotation,
+                          root, Mat(mats, "Skirting"), $"Skirt_{placed}");
+                    placed++;
+                }
+                if (models.ContainsKey("Cornice"))
+                {
+                    Place(models["Cornice"], basePos + Vector3.up * (b.max.y - 0.03f), faceRotation,
+                          root, Mat(mats, "Cornice"), $"Cornice_{placed}");
+                    placed++;
+                }
             }
 
             // 配管: 天井際を廊下に沿って走らせる。壁の向きに合わせて伸ばす方向を決める
             if (wallIndex % 4 == 2 && models.ContainsKey("Pipe_Run") && width > 2.5f)
             {
-                var along = normal == Vector3.right ? Vector3.forward : Vector3.right;
                 // 壁から少し離して天井直下に吊る
                 var pos = face + outward * 0.18f + Vector3.up * (b.max.y - 0.22f)
-                          - along * (width * 0.5f);
-                var rot = Quaternion.LookRotation(along, Vector3.up);
+                          - alongWall * (width * 0.5f);
+                var rot = Quaternion.LookRotation(alongWall, Vector3.up);
                 Place(models["Pipe_Run"], pos, rot, root, Mat(mats, "Pipe_Run"), $"Pipe_{placed}");
                 placed++;
             }

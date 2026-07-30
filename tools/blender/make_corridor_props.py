@@ -157,6 +157,44 @@ def make_radiator():
     return join(parts, "Radiator")
 
 
+
+# ----------------------------------------------------------------------
+# 巾木。壁と床の取り合いに回す。長さ 1m で、必要な数だけ並べて使う。
+#
+# 実際の室内には必ずあり、これが無いと壁と床が直角にぶつかるだけの
+# 「テクスチャを貼った箱」に見える。上端に面取りを入れて光を拾わせる。
+# -Y を向く（Unity では -Z）。
+# ----------------------------------------------------------------------
+def make_skirting():
+    parts = []
+    L, H = 1.0, 0.105
+
+    # 本体
+    parts.append(box("SkirtBody", (0.0, 0.0, H * 0.5), (L, 0.022, H)))
+    # 上端の面取り。ここが光を拾って線が出る
+    parts.append(box("SkirtChamfer", (0.0, -0.004, H - 0.008), (L, 0.020, 0.018),
+                      rot=(math.radians(38), 0, 0)))
+    # 床との取り合いに細い立ち上がり
+    parts.append(box("SkirtToe", (0.0, -0.006, 0.010), (L, 0.010, 0.020)))
+
+    return join(parts, "Skirting")
+
+
+# ----------------------------------------------------------------------
+# 天井周りの見切り。壁と天井の取り合いに回す。長さ 1m。
+# 巾木と同じ理由で、角の線を出すために入れる。
+# ----------------------------------------------------------------------
+def make_cornice():
+    parts = []
+    L = 1.0
+
+    parts.append(box("CorniceBody", (0.0, 0.0, 0.0), (L, 0.018, 0.055)))
+    parts.append(box("CorniceLip", (0.0, -0.010, -0.028), (L, 0.026, 0.012),
+                      rot=(math.radians(-22), 0, 0)))
+
+    return join(parts, "Cornice")
+
+
 # ----------------------------------------------------------------------
 def uv_unwrap(obj):
     """
@@ -233,4 +271,6 @@ if __name__ == "__main__":
     build("vent",     make_vent,     "Vent_Grille.fbx",  (0.0, 0.0, 0.0), 1.1, 0.0)
     build("sign",     make_sign,     "Wall_Sign.fbx",    (0.0, 0.0, 0.0), 0.9, 0.0)
     build("radiator", make_radiator, "Radiator.fbx",     (0.0, 0.0, 0.0), 1.7, 0.0)
+    build("skirting", make_skirting, "Skirting.fbx",     (0.0, 0.0, 0.05), 0.8, 0.05)
+    build("cornice",  make_cornice,  "Cornice.fbx",      (0.0, 0.0, 0.0),  0.8, 0.0)
     print("=== done ===")
