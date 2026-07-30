@@ -27,42 +27,51 @@ public static class M11PolyHavenPropsPass
     /// 小物の定義。
     /// wallHug=true は壁際に寄せる（椅子・棚）。false は床の任意位置（箱・樽）。
     /// countPerScene はフロアあたりの目安。
+    ///
+    /// 間隔の指定が2つあるのには理由がある。最初は1つで済ませていたが、
+    /// それだと「清掃看板を12m間隔で置く」という指定が
+    /// 「先に置いた椅子12脚すべてから13m以上離す」という意味になり、
+    /// 幅4mの廊下では置ける場所が消えて 0/2 個になった。
+    ///   minSpacing … 同じ種類どうしの間隔（散らばらせるための指定）
+    ///   footprint  … その物体の半径（別種と重ならないための最小限）
+    /// 別種どうしは footprint の和だけ離れていれば十分で、それ以上離す理由はない。
     /// </summary>
     struct PropDef
     {
         public string id;
         public bool wallHug;
         public float minSpacing;
+        public float footprint;
         public Dictionary<string, int> perScene;   // シーン名 → 個数
     }
 
     static readonly PropDef[] Props =
     {
         // 待合の椅子。1F と 2F に並べる
-        new PropDef { id = "SchoolChair_01", wallHug = true, minSpacing = 1.2f,
+        new PropDef { id = "SchoolChair_01", wallHug = true, minSpacing = 1.2f, footprint = 0.35f,
                       perScene = new() { ["Hospital"] = 8, ["Hospital2F"] = 6 } },
-        new PropDef { id = "plastic_monobloc_chair_01", wallHug = true, minSpacing = 1.4f,
+        new PropDef { id = "plastic_monobloc_chair_01", wallHug = true, minSpacing = 1.4f, footprint = 0.35f,
                       perScene = new() { ["Hospital"] = 4, ["Hospital2F"] = 4, ["Hospital3F"] = 3 } },
         // スチール棚。地下の保管室が主戦場
-        new PropDef { id = "steel_frame_shelves_01", wallHug = true, minSpacing = 3f,
+        new PropDef { id = "steel_frame_shelves_01", wallHug = true, minSpacing = 3f, footprint = 1.0f,
                       perScene = new() { ["HospitalBasement"] = 7, ["Hospital3F"] = 2 } },
-        new PropDef { id = "Shelf_01", wallHug = true, minSpacing = 3f,
+        new PropDef { id = "Shelf_01", wallHug = true, minSpacing = 3f, footprint = 0.8f,
                       perScene = new() { ["HospitalBasement"] = 4, ["Hospital2F"] = 2 } },
         // 「床が濡れています」の看板。無人の廊下に置くと効く
-        new PropDef { id = "WetFloorSign_01", wallHug = false, minSpacing = 12f,
+        new PropDef { id = "WetFloorSign_01", wallHug = false, minSpacing = 12f, footprint = 0.35f,
                       perScene = new() { ["Hospital"] = 2, ["Hospital2F"] = 2, ["Hospital3F"] = 2 } },
         // 医療用ワゴンとして使う
-        new PropDef { id = "CoffeeCart_01", wallHug = true, minSpacing = 8f,
+        new PropDef { id = "CoffeeCart_01", wallHug = true, minSpacing = 8f, footprint = 0.6f,
                       perScene = new() { ["Hospital2F"] = 2, ["Hospital3F"] = 2 } },
         // 地下の雑多な物
-        new PropDef { id = "cardboard_box_01", wallHug = false, minSpacing = 1.5f,
+        new PropDef { id = "cardboard_box_01", wallHug = false, minSpacing = 1.5f, footprint = 0.3f,
                       perScene = new() { ["HospitalBasement"] = 10 } },
-        new PropDef { id = "wooden_crate_02", wallHug = true, minSpacing = 2.5f,
+        new PropDef { id = "wooden_crate_02", wallHug = true, minSpacing = 2.5f, footprint = 0.4f,
                       perScene = new() { ["HospitalBasement"] = 5 } },
-        new PropDef { id = "Barrel_02", wallHug = true, minSpacing = 2.5f,
+        new PropDef { id = "Barrel_02", wallHug = true, minSpacing = 2.5f, footprint = 0.35f,
                       perScene = new() { ["HospitalBasement"] = 4 } },
-        // 病室の目覚まし時計
-        new PropDef { id = "alarm_clock_01", wallHug = false, minSpacing = 6f,
+        // 病室の目覚まし時計。床に落ちている扱い
+        new PropDef { id = "alarm_clock_01", wallHug = false, minSpacing = 6f, footprint = 0.12f,
                       perScene = new() { ["Hospital3F"] = 2 } },
     };
 
@@ -144,12 +153,25 @@ public static class M11PolyHavenPropsPass
                           .OrderBy(r => r.bounds.center.z).ThenBy(r => r.bounds.center.x)
                           .ToList();
 
-        var used = new List<(Vector3 pos, float radius)>();
-        bool Free(Vector3 pos, float radius)
+        // 同種どうしの間隔と、別種との重なり防止を別に持つ。
+        // 1つにまとめていたときは、間隔の広い小物が
+        // 「先に置いた全ての小物から離れる」ことを要求してしまい置けなくなった。
+        var sameKind = new Dictionary<string, List<Vector3>>();
+        var everything = new List<(Vector3 pos, float footprint)>();
+
+        bool Free(string kind, Vector3 pos, float spacing, float footprint)
         {
-            foreach (var (p, r) in used)
-                if (Vector3.Distance(p, pos) < radius + r) return false;
-            used.Add((pos, radius));
+            if (sameKind.TryGetValue(kind, out var mine))
+                foreach (var p in mine)
+                    if (Vector3.Distance(p, pos) < spacing) return false;
+
+            // 別種とは「触れない」だけでよい
+            foreach (var (p, f) in everything)
+                if (Vector3.Distance(p, pos) < footprint + f) return false;
+
+            if (mine == null) sameKind[kind] = mine = new List<Vector3>();
+            mine.Add(pos);
+            everything.Add((pos, footprint));
             return true;
         }
 
@@ -161,8 +183,10 @@ public static class M11PolyHavenPropsPass
             if (!def.perScene.TryGetValue(sceneLabel, out int count)) continue;
             if (!models.TryGetValue(def.id, out var prefab)) continue;
 
+            // 試行回数は多めに取る。間隔の広い小物（清掃看板など）は
+            // 床の任意位置から探すので、当たりを引くまでに回数が必要になる
             int made = 0, attempts = 0;
-            while (made < count && attempts < count * 40)
+            while (made < count && attempts < count * 120)
             {
                 attempts++;
                 seed++;
@@ -206,7 +230,7 @@ public static class M11PolyHavenPropsPass
                     rot = Quaternion.Euler(0f, Hash(seed * 5.9f) * 360f, 0f);
                 }
 
-                if (!Free(pos, def.minSpacing)) continue;
+                if (!Free(def.id, pos, def.minSpacing, def.footprint)) continue;
 
                 var holder = new GameObject($"{def.id}_{made}");
                 holder.transform.SetParent(root, false);
@@ -217,6 +241,8 @@ public static class M11PolyHavenPropsPass
                 inst.transform.localPosition = Vector3.zero;
                 // localRotation / localScale は触らない（FBX インポーターの補正が入っている）
 
+                EnsureMaterial(inst, def.id);
+
                 made++;
                 placed++;
             }
@@ -225,6 +251,39 @@ public static class M11PolyHavenPropsPass
                 Debug.Log($"[Props] {sceneLabel}: {def.id} は {made}/{count} 個（置ける場所が足りない）");
         }
         return placed;
+    }
+
+    /// <summary>
+    /// マテリアルが当たっていないレンダラーに M12 が作ったマテリアルを充てる。
+    ///
+    /// 通常は M12 が fbx インポーターの差し替え表に登録するので、ここは何もしない。
+    /// ただし alarm_clock_01 のようにマテリアルスロットを持たない fbx があり、
+    /// その場合インポーター側では差し替えようがない。何もしないと Unity の
+    /// 既定マテリアル（白）で描かれる。
+    ///
+    /// SkinnedMeshRenderer も見ること。alarm_clock_01 はリグ付きで書き出されていて
+    /// MeshRenderer が0個・SkinnedMeshRenderer が5個だった。
+    /// MeshRenderer だけを見ていたら、この保険自体が空振りする。
+    /// </summary>
+    static void EnsureMaterial(GameObject instance, string id)
+    {
+        Material fallback = null;
+
+        foreach (var r in instance.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r.sharedMaterial != null && r.sharedMaterial.name.StartsWith("PH_")) continue;
+
+            if (fallback == null)
+            {
+                var path = $"{ModelDir}/{id}/PH_{id}.mat";
+                fallback = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (fallback == null) return;   // M12 が未実行。ここでは黙って諦める
+            }
+
+            var slots = new Material[Mathf.Max(1, r.sharedMaterials.Length)];
+            for (int i = 0; i < slots.Length; i++) slots[i] = fallback;
+            r.sharedMaterials = slots;
+        }
     }
 
     /// <summary>壁のどちら側が廊下かを NavMesh で判定する。M6 と同じ考え方。</summary>

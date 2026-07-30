@@ -3,9 +3,19 @@ guid: 21a59aaf91fa99a45a09d28b713e3a2c
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PH_WetFloorSign_01
+    second: {fileID: 2100000, guid: 139b0e48d76d1654b984391bbaeb7936, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WetFloorSign_01
+    second: {fileID: 2100000, guid: 139b0e48d76d1654b984391bbaeb7936, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1

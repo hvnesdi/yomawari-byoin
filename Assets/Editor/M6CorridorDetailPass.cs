@@ -267,6 +267,22 @@ public static class M6CorridorDetailPass
                 placed++;
             }
         }
+
+        // 種類ごとの内訳を出す。合計だけを見ていたら判断を誤るところだった。
+        // 1F の合計が 2F の 1/4 で「1F の設備が抜けている」ように見えたが、
+        // 内訳を見れば大半が巾木と回り縁（壁の長さに比例する）で、
+        // 1F は単に廊下が短いだけだと分かる。合計は密度の指標にならない。
+        var tally = new Dictionary<string, int>();
+        foreach (Transform child in root)
+        {
+            int cut = child.name.LastIndexOf('_');
+            var kind = cut > 0 ? child.name.Substring(0, cut) : child.name;
+            tally.TryGetValue(kind, out int n);
+            tally[kind] = n + 1;
+        }
+        Debug.Log("[Detail]   内訳: " + string.Join(" / ",
+                  tally.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value}")));
+
         return placed;
     }
 

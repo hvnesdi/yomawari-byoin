@@ -136,32 +136,34 @@ public static class M5LookPass
         }
 
         for (int i = profile.components.Count - 1; i >= 0; i--)
-            Object.DestroyImmediate(profile.components[i], true);
+            if (profile.components[i] != null) Object.DestroyImmediate(profile.components[i], true);
         profile.components.Clear();
 
         // 白飛びを抑えて階調を残す。これが無いと光源周りが真っ白に潰れる
-        var tone = profile.Add<Tonemapping>(true);
+        var tone = AddPersistent<Tonemapping>(profile);
         tone.mode.value = TonemappingMode.ACES;
 
-        // 彩度を落としてコントラストを上げる。1990年代の記録映像のような色に寄せる
-        var color = profile.Add<ColorAdjustments>(true);
-        color.postExposure.value = 0.35f;
+        // 彩度を落としてコントラストを上げる。1990年代の記録映像のような色に寄せる。
+        // 露出は下げる方向。プレイ画面を実測したら平均輝度 0.41 で
+        // 「消灯」という題に対して明るすぎた（+0.35 EV は明るくする指定だった）
+        var color = AddPersistent<ColorAdjustments>(profile);
+        color.postExposure.value = -0.55f;
         color.contrast.value = 16f;
         color.saturation.value = -20f;
 
         // 蛍光灯の青白さ。暖色に寄ると「生活感のある病院」になってしまう
-        var wb = profile.Add<WhiteBalance>(true);
+        var wb = AddPersistent<WhiteBalance>(profile);
         wb.temperature.value = -16f;
         wb.tint.value = 5f;
 
         // 影を青、ハイライトをわずかに暖色にして色の分離を作る
-        var smh = profile.Add<ShadowsMidtonesHighlights>(true);
+        var smh = AddPersistent<ShadowsMidtonesHighlights>(profile);
         smh.shadows.value    = new Vector4(0.82f, 0.90f, 1.12f, 0f);
         smh.midtones.value   = new Vector4(1.00f, 1.00f, 1.00f, 0f);
         smh.highlights.value = new Vector4(1.06f, 1.02f, 0.94f, 0f);
 
         // 暗い廊下で光源が光って見えるかはブルームで決まる
-        var bloom = profile.Add<Bloom>(true);
+        var bloom = AddPersistent<Bloom>(profile);
         bloom.threshold.value = 0.75f;
         bloom.intensity.value = 0.9f;
         bloom.scatter.value = 0.72f;
@@ -169,25 +171,56 @@ public static class M5LookPass
         bloom.highQualityFiltering.value = true;
 
         // CG のクリーンさを消す。ホラーでは粒子感がそのまま不安感になる
-        var grain = profile.Add<FilmGrain>(true);
+        var grain = AddPersistent<FilmGrain>(profile);
         grain.type.value = FilmGrainLookup.Medium1;
         grain.intensity.value = 0.32f;
         grain.response.value = 0.75f;
 
         // 以下3つは HallucinationSystem が毎フレーム上書きするので、ここは初期値
-        var vignette = profile.Add<Vignette>(true);
+        var vignette = AddPersistent<Vignette>(profile);
         vignette.intensity.value = 0.34f;
         vignette.smoothness.value = 0.45f;
         vignette.color.value = Color.black;
 
-        var ca = profile.Add<ChromaticAberration>(true);
+        var ca = AddPersistent<ChromaticAberration>(profile);
         ca.intensity.value = 0.06f;
 
-        var ld = profile.Add<LensDistortion>(true);
+        var ld = AddPersistent<LensDistortion>(profile);
         ld.intensity.value = 0f;
 
         EditorUtility.SetDirty(profile);
-        log.AppendLine("  ポストプロセス: ACES / 色調整 / 色温度 / 影ハイライト分離 / ブルーム / グレイン / ビネット");
+        AssetDatabase.SaveAssets();
+        AssetDatabase.ImportAsset(ProfilePath);
+
+        // 保存できたか数えて出す。「設定した」ではなく「残った」を報告する
+        var saved = AssetDatabase.LoadAssetAtPath<VolumeProfile>(ProfilePath);
+        int alive = 0;
+        if (saved != null)
+            foreach (var c in saved.components) if (c != null) alive++;
+        log.AppendLine($"  ポストプロセス: {alive} 個を保存 " +
+                        "(ACES / 色調整 / 色温度 / 影ハイライト分離 / ブルーム / グレイン / ビネット)");
+        if (alive == 0)
+            log.AppendLine("  ? ポストプロセスが1つも保存されていない");
+    }
+
+    /// <summary>
+    /// ボリュームに効果を足して、**アセットの一部として保存する**。
+    ///
+    /// `profile.Add&lt;T&gt;()` だけでは足りない。生成されるのはメモリ上のインスタンスで、
+    /// アセットの子として登録されないため、Unity を開き直すと参照が全部 null になる。
+    /// 実際にそうなっていて、`HallucinationProfile.asset` の components は
+    /// `{fileID: 0}` が9個並んだ状態だった。
+    ///
+    /// **つまり ACES・彩度・グレイン・ブルームは一度も効いていなかった。**
+    /// 画面が「昼間の事務所」のように明るく、粒子感もビネットも無かった原因はこれ。
+    /// パスのログは毎回「設定した」と報告していたので、ログだけでは気づけなかった。
+    /// </summary>
+    static T AddPersistent<T>(VolumeProfile profile) where T : VolumeComponent
+    {
+        var component = profile.Add<T>(true);
+        component.name = typeof(T).Name;   // 付けないとインスペクタで名前無しになる
+        AssetDatabase.AddObjectToAsset(component, profile);
+        return component;
     }
 
     // ------------------------------------------------------------------

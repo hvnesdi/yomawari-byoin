@@ -48,16 +48,29 @@ public static class PlayModeBatchRunner
         if (cam == null) { Debug.LogWarning("[PlayModeBatchRunner] MainCamera が無く撮影できません"); return; }
 
         const int w = 1280, h = 720;
-        // フォーマットを明示しないと HDR で描かれ、RGB24 に読み出したときに
-        // 色が壊れる（全面マゼンタになる）。SceneScreenshotter と同じ指定にする。
-        var rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32);
-        rt.antiAliasing = 2;
+
+        // **HDR で描いてから LDR に落とす。**
+        //
+        // 以前は ARGB32 に直接描いていた。フォーマット未指定で全面マゼンタになった件の
+        // 対処だったが、行き過ぎだった。URP は描画先が LDR だとトーンマップを飛ばすので、
+        // ACES も色調整も乗らない画が保存される。
+        // **つまり検証に使っていた画がプレイヤーの見る画と違っていた。**
+        // 明るさを測って「明るすぎる」と判断していたのは、この画に対してだった。
+        //
+        // HDR に描けば URP がトーンマップまで済ませてくれるので、
+        // それを ARGB32 に blit してから読み出す。マゼンタの再発も防げる。
+        var hdr = new RenderTexture(w, h, 24, RenderTextureFormat.DefaultHDR);
+        hdr.antiAliasing = 2;
+        var ldr = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32);
+
         var prevTarget = cam.targetTexture;
         var prevActive = RenderTexture.active;
 
-        cam.targetTexture = rt;
+        cam.targetTexture = hdr;
         cam.Render();
-        RenderTexture.active = rt;
+
+        Graphics.Blit(hdr, ldr);
+        RenderTexture.active = ldr;
 
         var tex = new Texture2D(w, h, TextureFormat.RGB24, false);
         tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
@@ -72,8 +85,10 @@ public static class PlayModeBatchRunner
         System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
 
         Object.DestroyImmediate(tex);
-        rt.Release();
-        Object.DestroyImmediate(rt);
+        hdr.Release();
+        Object.DestroyImmediate(hdr);
+        ldr.Release();
+        Object.DestroyImmediate(ldr);
 
         Debug.Log($"[PlayModeBatchRunner] ゲーム画面を保存: {path}");
     }

@@ -183,8 +183,18 @@ public static class M10RealMaterialsPass
             if (!sets.TryGetValue(match.asset, out var set)) continue;
 
             // タイリングは既存値に倍率を掛ける。既存値は UV の張り方を反映しているので
-            // 捨てずに使い、実寸差だけ倍率で補正する
-            var scale = mat.GetTextureScale("_BaseMap") * match.tilingMul;
+            // 捨てずに使い、実寸差だけ倍率で補正する。
+            // 天井は面ごとに大きさが違い（Plaster_Ceiling__1.75x13.25 のように
+            // 名前に寸法が入っている）、既存値がその寸法から算出されているため、
+            // 絶対値で上書きすると面ごとの調整が失われる。
+            //
+            // **倍率は初回の差し替えのときだけ掛ける。**
+            // 毎回掛けていたので run_visuals を2回走らせると天井の目が
+            // 16 → 32 → 64 と倍々に細かくなっていた。冪等だと書いてあるのに
+            // 冪等でなかった。差し替え済みかどうかはテクスチャの同一性で判る。
+            bool alreadyConverted = mat.GetTexture("_BaseMap") == set.color;
+            var scale = mat.GetTextureScale("_BaseMap");
+            if (!alreadyConverted) scale *= match.tilingMul;
             var offset = mat.GetTextureOffset("_BaseMap");
 
             mat.SetTexture("_BaseMap", set.color);

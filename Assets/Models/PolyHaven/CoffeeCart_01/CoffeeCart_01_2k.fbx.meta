@@ -3,9 +3,29 @@ guid: d015ea2491935124b9cc9d30d799caf3
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CoffeeCart_01_cart
+    second: {fileID: 2100000, guid: 2393c54ba1f29af4c89e9c9202f24fcf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CoffeeCart_01_mugs
+    second: {fileID: 2100000, guid: 2393c54ba1f29af4c89e9c9202f24fcf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CoffeeCart_01_props
+    second: {fileID: 2100000, guid: 529e945ca5422b848872dfefa89d4df8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PH_CoffeeCart_01_cart
+    second: {fileID: 2100000, guid: 2393c54ba1f29af4c89e9c9202f24fcf, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1

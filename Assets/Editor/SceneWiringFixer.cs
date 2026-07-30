@@ -194,6 +194,49 @@ public static class SceneWiringFixer
     }
 
     /// <summary>
+    /// 装飾を NavMesh のベイク対象から外す。
+    ///
+    /// `useGeometry = RenderMeshes` なので、置いた装飾の**描画メッシュが全部
+    /// 障害物として焼かれていた**。巾木と回り縁は壁の全長に沿って床際に並ぶので、
+    /// 歩ける範囲がその分だけ削られる。実測すると廊下のどこに立っても
+    /// 一番近い縁まで 0.3m しかない状態になっていた。
+    ///
+    /// 影響は見た目の判定だけではない。敵は NavMeshAgent で動くので、
+    /// 歩ける面が細切れになると追跡経路が切れる。
+    /// 装飾は通行を妨げない前提で置いているので、ベイクからは外す。
+    /// </summary>
+    static void ExcludePropsFromNavMesh()
+    {
+        // M5/M6/M11 が作る入れ物。いずれも「そこにあるが通行の邪魔はしない」もの
+        foreach (var rootName in new[] { "CorridorDetail", "ScannedProps", "Grime" })
+        {
+            var root = FindIncludingInactive(rootName);
+            if (root == null) continue;
+
+            var modifier = root.GetComponent<NavMeshModifier>();
+            if (modifier == null) modifier = root.AddComponent<NavMeshModifier>();
+
+            modifier.ignoreFromBuild = true;
+            // 子孫にも効かせる。1つずつ付けると数千個になる
+            modifier.applyToChildren = true;
+            EditorUtility.SetDirty(modifier);
+        }
+    }
+
+    /// <summary>
+    /// 名前で探す。`GameObject.Find` は**非アクティブなものを見つけられない**。
+    /// 病室（PatientRoom_1）がこれで見つからず、開始位置の探索範囲が
+    /// 「現在位置の周辺」に落ちていた。
+    /// </summary>
+    static GameObject FindIncludingInactive(string name)
+    {
+        foreach (var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include,
+                                                              FindObjectsSortMode.None))
+            if (t.name == name) return t.gameObject;
+        return null;
+    }
+
+    /// <summary>
     /// NavMesh を焼く。どのシーンにも NavMeshSurface が無く NavMesh データも存在しないため、
     /// 敵の NavMeshAgent.SetDestination がこれまで一度も成功していなかった。
     /// </summary>
@@ -215,6 +258,7 @@ public static class SceneWiringFixer
             changes++;
         }
 
+        ExcludePropsFromNavMesh();
         surface.BuildNavMesh();
 
         var data = surface.navMeshData;
@@ -239,8 +283,15 @@ public static class SceneWiringFixer
     }
 
     /// <summary>
-    /// プレイヤーの初期向きを「一番開けている方向」に直す。
-    /// 全シーンで壁に向かってスポーンしており、起動直後の画面が壁だった。
+    /// プレイヤーの初期位置と向きを直す。
+    ///
+    /// 以前は向きだけを直していたが、それでは足りなかった。
+    /// **プレイヤー自身が壁際の角に置かれているので、どちらを向いても壁が映る。**
+    /// プレイテストの1枚目がのっぺりした壁とドアで埋まっていて、
+    /// ゲームの最初の画がこれでは、他をどれだけ作り込んでも意味がない。
+    ///
+    /// CLAUDE.md の想定は「薄暗い病室で目が覚める」なので、病室があればその中へ、
+    /// 無ければ現在位置の周辺で、**一番広く開けた場所**に置く。
     /// 判定にはベイク済み NavMesh を使う（壁にコライダーが無い箇所があるため
     /// Physics.Raycast では判定できない）。
     /// </summary>
@@ -249,45 +300,158 @@ public static class SceneWiringFixer
         var pc = Object.FindFirstObjectByType<PlayerController>();
         if (pc == null) return 0;
 
-        if (!NavMesh.SamplePosition(pc.transform.position, out var onMesh, 5f, NavMesh.AllAreas))
+        var origin = pc.transform.position;
+
+        // 探す範囲は優先順に試す。病室を第一希望にするが、そこに歩ける床が
+        // 無いこともある（1F の PatientRoom_1 の周辺には NavMesh が無かった）。
+        // 第一希望が空振りしたら現在位置の周辺に落とす。
+        // ここで諦めると「壁を向いたまま」に戻ってしまう。
+        Vector3 bestPos = origin;
+        float bestClearance = -1f;
+        bool found = false;
+
+        foreach (var area in StartSearchAreas(origin))
         {
-            Debug.LogWarning("[SceneWiringFixer] プレイヤーが NavMesh 上に居ないため向きを判定できません");
-            return 0;
-        }
-
-        const float Probe = 30f;
-        Vector3 bestDir = pc.transform.forward;
-        float bestDistance = -1f;
-
-        for (int i = 0; i < 12; i++)
-        {
-            var dir = Quaternion.Euler(0f, i * 30f, 0f) * Vector3.forward;
-            var target = onMesh.position + dir * Probe;
-
-            float distance = NavMesh.Raycast(onMesh.position, target, out var hit, NavMesh.AllAreas)
-                ? Vector3.Distance(onMesh.position, hit.position)
-                : Probe;
-
-            if (distance > bestDistance)
+            const int Steps = 9;
+            for (int ix = 0; ix < Steps; ix++)
+            for (int iz = 0; iz < Steps; iz++)
             {
-                bestDistance = distance;
-                bestDir = dir;
+                var candidate = new Vector3(
+                    Mathf.Lerp(area.bounds.min.x, area.bounds.max.x, ix / (float)(Steps - 1)),
+                    origin.y,
+                    Mathf.Lerp(area.bounds.min.z, area.bounds.max.z, iz / (float)(Steps - 1)));
+
+                if (!NavMesh.SamplePosition(candidate, out var hit, 1.5f, NavMesh.AllAreas)) continue;
+
+                // 窮屈さ = 8方向のうち最も近い縁までの距離。角に居ると小さくなる
+                float clearance = Clearance(hit.position);
+                if (clearance > bestClearance)
+                {
+                    bestClearance = clearance;
+                    bestPos = hit.position;
+                    found = true;
+                }
             }
+
+            if (found)
+            {
+                Debug.Log($"[SceneWiringFixer] 開始位置は「{area.label}」から選んだ");
+                break;
+            }
+            Debug.Log($"[SceneWiringFixer] 「{area.label}」には歩ける床が無いので次を試す");
         }
 
-        if (bestDistance < 2f)
+        if (!found)
         {
-            Debug.LogWarning($"[SceneWiringFixer] 開けている方向が見つかりません（最長 {bestDistance:F1}m）");
+            Debug.LogWarning("[SceneWiringFixer] 置ける場所が見つからないため初期位置を変えません");
             return 0;
         }
+
+        // 選んだ場所から一番遠くまで見通せる方向を向く
+        var (bestDir, sightLine) = BestView(bestPos);
+
+        // 足が床に埋まらないよう、元の高さの差分を保つ
+        var newPos = new Vector3(bestPos.x, origin.y, bestPos.z);
+        float moved = Vector3.Distance(origin, newPos);
 
         var newRotation = Quaternion.LookRotation(bestDir, Vector3.up);
-        if (Quaternion.Angle(pc.transform.rotation, newRotation) < 5f) return 0;
+        bool turn = Quaternion.Angle(pc.transform.rotation, newRotation) >= 5f;
+        if (moved < 0.3f && !turn) return 0;
 
+        pc.transform.position = newPos;
         pc.transform.rotation = newRotation;
         EditorUtility.SetDirty(pc.transform);
-        Debug.Log($"[SceneWiringFixer] プレイヤーの向きを修正（{bestDistance:F1}m 先まで開けている方向へ）");
+
+        // 捕捉されたときの転送先も一緒に動かす。置いていくと
+        // 「捕まると壁の角に戻される」ことになる
+        var respawn = FindIncludingInactive("PlayerRespawnPoint");
+        if (respawn != null)
+        {
+            respawn.transform.position = newPos;
+            respawn.transform.rotation = newRotation;
+            EditorUtility.SetDirty(respawn.transform);
+        }
+
+        Debug.Log($"[SceneWiringFixer] 初期位置を {moved:F1}m 動かした " +
+                  $"（周囲 {bestClearance:F1}m 空き / 視線 {sightLine:F1}m 先まで開けている）");
         return 1;
+    }
+
+    /// <summary>
+    /// 開始位置を探す範囲を、優先順に並べて返す。
+    ///
+    /// 病室は名前で拾う（`PatientRoom_1` などが各シーンに置かれている）。
+    /// **これらは子を持たない空のマーカーになっている。**
+    /// 部屋の形状は後から `HospitalPackArchitecture` がパックのプレハブに
+    /// 置き換えたため、別の名前の下に移っている。位置だけは残っている。
+    /// （形状から寸法を取ろうとして「病室が見つからない」と誤って報告していた）
+    ///
+    /// なお 1F の PatientRoom_1 の周辺には NavMesh が無い。
+    /// 病室が歩ける空間として成立していない可能性があり、要確認。
+    /// </summary>
+    static System.Collections.Generic.List<(Bounds bounds, string label)>
+        StartSearchAreas(Vector3 fallbackCenter)
+    {
+        var areas = new System.Collections.Generic.List<(Bounds, string)>();
+
+        foreach (var name in new[] { "PatientRoom_1", "PatientRoom", "PatientRoom2F_1", "PatientRoom3F_1" })
+        {
+            var room = FindIncludingInactive(name);
+            if (room == null) continue;
+
+            var renderers = room.GetComponentsInChildren<MeshRenderer>(true);
+            if (renderers.Length > 0)
+            {
+                var b = renderers[0].bounds;
+                foreach (var r in renderers) b.Encapsulate(r.bounds);
+                b.Expand(new Vector3(-1.2f, 0f, -1.2f));   // 壁の内側だけを候補にする
+                areas.Add((b, $"{name} の形状 {b.size.x:F1}x{b.size.z:F1}m"));
+            }
+            else
+            {
+                // 形状が無い（空のマーカー）。位置だけを使う
+                areas.Add((new Bounds(room.transform.position, new Vector3(6f, 1f, 6f)),
+                           $"{name} の位置 {room.transform.position} の周辺 6m 四方"));
+            }
+            break;
+        }
+
+        areas.Add((new Bounds(fallbackCenter, new Vector3(10f, 1f, 10f)),
+                   "現在位置の周辺 10m 四方"));
+        return areas;
+    }
+
+    /// <summary>その場所の窮屈さ。8方向で最も近い壁までの距離を返す。</summary>
+    static float Clearance(Vector3 pos)
+    {
+        const float Probe = 6f;
+        float nearest = Probe;
+        for (int i = 0; i < 8; i++)
+        {
+            var dir = Quaternion.Euler(0f, i * 45f, 0f) * Vector3.forward;
+            if (NavMesh.Raycast(pos, pos + dir * Probe, out var hit, NavMesh.AllAreas))
+                nearest = Mathf.Min(nearest, Vector3.Distance(pos, hit.position));
+        }
+        return nearest;
+    }
+
+    /// <summary>一番遠くまで見通せる方向と、その距離。</summary>
+    static (Vector3 dir, float distance) BestView(Vector3 pos)
+    {
+        const float Probe = 30f;
+        Vector3 bestDir = Vector3.forward;
+        float bestDistance = -1f;
+
+        for (int i = 0; i < 24; i++)
+        {
+            var dir = Quaternion.Euler(0f, i * 15f, 0f) * Vector3.forward;
+            float distance = NavMesh.Raycast(pos, pos + dir * Probe, out var hit, NavMesh.AllAreas)
+                ? Vector3.Distance(pos, hit.position)
+                : Probe;
+
+            if (distance > bestDistance) { bestDistance = distance; bestDir = dir; }
+        }
+        return (bestDir, bestDistance);
     }
 
     static int FixEnemy()
@@ -297,7 +461,7 @@ public static class SceneWiringFixer
         // 捕捉されたときの転送先。CLAUDE.md では「最寄り病室」だが、
         // まずはプレイヤーの初期位置に戻す形で成立させる。
         // TODO(M2): フロアごとに病室単位の転送先を用意する
-        var respawn = GameObject.Find("PlayerRespawnPoint");
+        var respawn = FindIncludingInactive("PlayerRespawnPoint");
         if (respawn == null)
         {
             var pc = Object.FindFirstObjectByType<PlayerController>();

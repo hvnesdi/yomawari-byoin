@@ -3,9 +3,19 @@ guid: 0534c215f7a2746428f9957663fda7ee
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Barrel_02
+    second: {fileID: 2100000, guid: 764b7a1b2e664274892fa8203970a425, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PH_Barrel_02
+    second: {fileID: 2100000, guid: 764b7a1b2e664274892fa8203970a425, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1

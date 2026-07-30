@@ -45,6 +45,16 @@ public static class M3AtmospherePass
     //   アルベドを 0.78 以下に直した結果、光量まで絞ると画面全体が最大輝度 0.35 の
     //   「一様に暗いだけ」になり、光の溜まりと闇のコントラストが失われた。
     //   暗さは ambient と fog で作り、ライトは光源として立たせる。
+    /// <summary>
+    /// そのシーンのライト倍率。M5SetDressingPass が合成するために公開している。
+    ///
+    /// 両方のパスが同じ「記録した元の強度」から計算して書き戻していたので、
+    /// **後に走った M5 が M3 のフロアごとの倍率を消していた。**
+    /// 地下は 0.75 倍のはずが 1.45 倍で焼かれ、全フロアが同じ明るさになっていた。
+    /// 掛け算を分担するときは、片方が他方の結果を知っている必要がある。
+    /// </summary>
+    public static float LightScaleFor(string scenePath) => MoodFor(scenePath).lightScale;
+
     static FloorMood MoodFor(string scenePath)
     {
         if (scenePath.EndsWith("HospitalBasement.unity"))

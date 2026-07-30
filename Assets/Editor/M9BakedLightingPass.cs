@@ -57,11 +57,16 @@ public static class M9BakedLightingPass
             scenePath, UnityEditor.SceneManagement.OpenSceneMode.Single);
         var label = System.IO.Path.GetFileNameWithoutExtension(scenePath);
 
-        int marked = MarkStaticGeometry();
+        var (newlyMarked, totalStatic) = MarkStaticGeometry();
         int lights = ConfigureLights();
         ConfigureLightingSettings();
 
-        Debug.Log($"[Bake] {label}: 静的 {marked} 個 / ライト {lights} 個 / 解像度 {TexelsPerUnit} texel/unit");
+        // 「新たに印を付けた数」と「静的な総数」を分けて出す。
+        // 以前は前者だけを「静的 N 個」と出していて、2回目の実行では
+        // 既に印が付いている分が数えられず、数が減ったように見えた
+        // （1F が 386 → 270 に減って一瞬あわてた。実際は何も失われていない）
+        Debug.Log($"[Bake] {label}: 静的 {totalStatic} 個（うち新規 {newlyMarked}）" +
+                  $" / ライト {lights} 個 / 解像度 {TexelsPerUnit} texel/unit");
 
         var sw = Stopwatch.StartNew();
         bool ok = Lightmapping.Bake();
@@ -88,14 +93,15 @@ public static class M9BakedLightingPass
     /// 静的でないとライトマップに焼かれないし、逆に動くものを焼くと
     /// 動いた先に影が残る。
     /// </summary>
-    static int MarkStaticGeometry()
+    static (int marked, int total) MarkStaticGeometry()
     {
-        int marked = 0;
+        int marked = 0, total = 0;
 
         foreach (var r in Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             var go = r.gameObject;
             if (IsDynamic(go)) continue;
+            total++;
 
             var flags = StaticEditorFlags.ContributeGI
                       | StaticEditorFlags.BatchingStatic
@@ -113,7 +119,7 @@ public static class M9BakedLightingPass
 
             marked++;
         }
-        return marked;
+        return (marked, total);
     }
 
     static bool IsDynamic(GameObject go)

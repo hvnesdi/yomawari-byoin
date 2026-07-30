@@ -3,9 +3,19 @@ guid: 28c74fcf25d87f24984d241b7b6c6c7e
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PH_SchoolChair_01
+    second: {fileID: 2100000, guid: 2e54fd092da18d54ea6e608f18c415c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SchoolChair_01
+    second: {fileID: 2100000, guid: 2e54fd092da18d54ea6e608f18c415c6, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
