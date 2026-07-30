@@ -195,15 +195,13 @@ public static class M5GrimePass
                 float y, w, hgt;
                 if (hk < 0.34f)
                 {
-                    // 天井際から垂れる汚れ。
-                    // 本来は Decal_Water_01 を使いたいが、あのテクスチャは
-                    // 白背景に薄いベージュの筋という作りで、暗く色を付けても
-                    // 壁に白い板が貼られたようにしか見えなかった（実測で確認）。
-                    // 生成し直すまではカビで代用する。
-                    // TODO: decal_waterstain_01.png を暗い染みとして作り直す
-                    key = "Decal_Mold_01";
-                    y = b.max.y - 0.30f - hv * 0.8f;
-                    w = 0.7f + hu * 0.8f; hgt = 1.1f + hv * 1.0f;
+                    // 天井際から垂れる水染み。
+                    // テクスチャは tools/gen_decals.py で生成し直したもの。
+                    // 元のものは白背景＋薄いベージュの筋で、暗く着色しても
+                    // 壁に白い板が貼られたようにしか見えなかった。
+                    key = "Decal_Water_01";
+                    y = b.max.y - 0.30f - hv * 0.9f;
+                    w = 0.75f + hu * 0.9f; hgt = 1.3f + hv * 1.2f;
                 }
                 else if (hk < 0.70f)
                 {

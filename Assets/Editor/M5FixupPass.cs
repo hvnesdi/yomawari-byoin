@@ -103,14 +103,17 @@ public static class M5FixupPass
     /// </summary>
     static void TintGrimeMaterials()
     {
+        // テクスチャを tools/gen_decals.py で作り直し、RGB も暗く持たせたので、
+        // マテリアル側で重ねて暗くする必要はなくなった。
+        // ここで 0.3 のような値を掛けると真っ黒に潰れる。
         var tints = new (string name, Color tint)[]
         {
-            ("Decal_Water_01",   new Color(0.30f, 0.26f, 0.20f)),   // 錆混じりの水染み
-            ("Decal_Mold_01",    new Color(0.20f, 0.24f, 0.17f)),   // 黒カビ
-            ("Decal_Mold_02",    new Color(0.18f, 0.21f, 0.16f)),
-            ("Decal_Scratch_01", new Color(0.22f, 0.22f, 0.24f)),   // 引っかき傷
-            ("Decal_Blood_01",   new Color(0.32f, 0.06f, 0.05f)),   // 古い血
-            ("Decal_Blood_02",   new Color(0.28f, 0.05f, 0.04f)),
+            ("Decal_Water_01",   new Color(0.95f, 0.95f, 0.95f)),
+            ("Decal_Mold_01",    new Color(0.95f, 0.95f, 0.95f)),
+            ("Decal_Mold_02",    new Color(0.95f, 0.95f, 0.95f)),
+            ("Decal_Scratch_01", new Color(0.95f, 0.95f, 0.95f)),
+            ("Decal_Blood_01",   new Color(0.95f, 0.95f, 0.95f)),
+            ("Decal_Blood_02",   new Color(0.95f, 0.95f, 0.95f)),
         };
 
         foreach (var (name, tint) in tints)
