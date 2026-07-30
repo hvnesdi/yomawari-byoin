@@ -33,6 +33,12 @@ public static class M3AtmospherePass
         public float flickerRatio;   // ちらつかせる蛍光灯の割合
     }
 
+    // 環境光について:
+    //   M8PalettePass でテクスチャ付きマテリアルのアルベドを白（=テクスチャそのまま）に
+    //   戻した結果、面が本来の明るさで返るようになり全体が明るくなった。
+    //   実際の病院の壁は白いので、albedo を下げて暗くするのは嘘になる。
+    //   暗さは環境光と光量で作るべきなので、ここを約 40% 下げて釣り合わせている。
+    //
     // lightScale について:
     //   当初は 0.45〜0.7 に落としていたが、それは _BaseColor が 2.5 という
     //   過剰なアルベドを打ち消すための調整だった。ClampOverbrightAlbedo で
@@ -43,25 +49,25 @@ public static class M3AtmospherePass
     {
         if (scenePath.EndsWith("HospitalBasement.unity"))
             return new FloorMood {
-                ambient = new Color(0.020f, 0.020f, 0.026f),
+                ambient = new Color(0.011f, 0.011f, 0.015f),
                 fogColor = new Color(0.010f, 0.010f, 0.014f), fogDensity = 0.075f,
                 lightScale = 0.75f, flickerRatio = 0.5f };
 
         if (scenePath.EndsWith("Hospital3F.unity"))
             return new FloorMood {
-                ambient = new Color(0.030f, 0.030f, 0.038f),
+                ambient = new Color(0.017f, 0.017f, 0.022f),
                 fogColor = new Color(0.018f, 0.018f, 0.024f), fogDensity = 0.055f,
                 lightScale = 0.85f, flickerRatio = 0.4f };
 
         if (scenePath.EndsWith("Hospital2F.unity"))
             return new FloorMood {
-                ambient = new Color(0.038f, 0.038f, 0.046f),
+                ambient = new Color(0.022f, 0.022f, 0.028f),
                 fogColor = new Color(0.022f, 0.022f, 0.028f), fogDensity = 0.045f,
                 lightScale = 0.95f, flickerRatio = 0.3f };
 
         // 1F はチュートリアル。完全な暗闇だと操作を覚えられないので少しだけ明るい
         return new FloorMood {
-            ambient = new Color(0.048f, 0.048f, 0.056f),
+            ambient = new Color(0.029f, 0.029f, 0.035f),
             fogColor = new Color(0.028f, 0.028f, 0.034f), fogDensity = 0.035f,
             lightScale = 1.1f, flickerRatio = 0.25f };
     }
@@ -187,9 +193,12 @@ public static class M3AtmospherePass
     /// これがプレイ画面の「暗い廊下に浮く白い矩形」の正体
     /// （オブジェクトID描画で 100% が Mat_Walllime01_C の壁パネルと判明）。
     ///
-    /// 1.0 以下に戻すだけでなく、廃病院の古びた壁として 0.78 を上限にする。
+    /// 上限は 1.0。以前は 0.78 まで下げていたが、それは行き過ぎだった。
+    /// テクスチャが色を運んでいるマテリアルは _BaseColor = 1.0 が正しく、
+    /// ちょうど 1.0 だったものまで 22% 暗くしてしまい、材料の色が失われていた。
+    /// 暗さは環境光と光量で作る（M8PalettePass と方針を揃えている）。
     /// </summary>
-    const float MaxAlbedo = 0.78f;
+    const float MaxAlbedo = 1.0f;
 
     [MenuItem("消灯/M3: アルベド1.0超のマテリアルを直す")]
     public static void ClampOverbrightAlbedo()

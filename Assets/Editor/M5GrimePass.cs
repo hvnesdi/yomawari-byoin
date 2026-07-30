@@ -21,6 +21,10 @@ using UnityEngine.Rendering;
 ///   - 引っかき傷は手が届く高さ
 ///   - 血は稀に、3F と地下だけ
 /// 位置は壁の座標から決定的に決める。実行ごとに変わるとシーン差分が汚れるため。
+///
+/// 寸法について: 最初は1枚あたり最大 2m 弱で置いていたが、撮影すると
+/// 壁に大きな黒い塊が乗っているように見えた。汚れは「小さいものが多数」が
+/// 現実の見え方なので、寸法を半分程度に落としてある。
 /// </summary>
 public static class M5GrimePass
 {
@@ -201,25 +205,25 @@ public static class M5GrimePass
                     // 壁に白い板が貼られたようにしか見えなかった。
                     key = "Decal_Water_01";
                     y = b.max.y - 0.30f - hv * 0.9f;
-                    w = 0.75f + hu * 0.9f; hgt = 1.3f + hv * 1.2f;
+                    w = 0.50f + hu * 0.55f; hgt = 0.85f + hv * 0.75f;
                 }
                 else if (hk < 0.70f)
                 {
                     key = hv < 0.5f ? "Decal_Mold_01" : "Decal_Mold_02";   // 床際に溜まる
                     y = b.min.y + 0.25f + hv * 0.6f;
-                    w = 0.8f + hu * 1.4f; hgt = 0.6f + hv * 0.8f;
+                    w = 0.45f + hu * 0.70f; hgt = 0.35f + hv * 0.45f;
                 }
                 else if (hk < 0.90f || !blood)
                 {
                     key = "Decal_Scratch_01";                     // 手が届く高さ
                     y = b.min.y + 0.9f + hv * 0.6f;
-                    w = 0.5f + hu * 0.7f; hgt = 0.35f + hv * 0.4f;
+                    w = 0.35f + hu * 0.45f; hgt = 0.25f + hv * 0.28f;
                 }
                 else
                 {
                     key = hv < 0.5f ? "Decal_Blood_01" : "Decal_Blood_02";
                     y = b.min.y + 0.4f + hv * 1.0f;
-                    w = 0.6f + hu * 0.8f; hgt = 0.7f + hv * 0.9f;
+                    w = 0.35f + hu * 0.45f; hgt = 0.40f + hv * 0.50f;
                 }
 
                 if (!mats.TryGetValue(key, out var mat)) continue;

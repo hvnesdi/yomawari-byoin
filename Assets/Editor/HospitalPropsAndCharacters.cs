@@ -315,16 +315,24 @@ public static class HospitalPropsAndCharacters
         EditorUtility.SetDirty(_ghostBody);
     }
 
+    /// <summary>
+    /// 単色マテリアルを用意する。
+    ///
+    /// 既存のマテリアルには色・粗さ・金属度を上書きしない。
+    /// M7SurfacePass が質感テクスチャを、M8PalettePass が材料ごとの色を
+    /// 割り当てているので、ここで初期値に戻すとその作業が消える。
+    /// （実際に消して、色を直したのに画が変わらないという事象を起こした）
+    ///
+    /// 新規作成時だけ引数の値を初期値として使う。
+    /// </summary>
     static Material ColorMat(string name, Color col, float roughness, float metallic)
     {
         string p = $"{PropMatDir}/{name}.mat";
         var mat = AssetDatabase.LoadAssetAtPath<Material>(p);
-        if (mat == null)
-        {
-            mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            AssetDatabase.CreateAsset(mat, p);
-        }
-        mat.shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (mat != null) return mat;
+
+        mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        AssetDatabase.CreateAsset(mat, p);
         mat.SetColor("_BaseColor", col);
         mat.SetFloat("_Smoothness", 1f - roughness);
         mat.SetFloat("_Metallic", metallic);

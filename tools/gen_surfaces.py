@@ -5,6 +5,8 @@
 # コンクリートと漆喰にもノーマルマップが無く、面が平らなまま。
 #
 # ここで作るのは「色」ではなく「表面の凹凸と粗さ」。
+# アルベドの平均は 1.0 近傍に保つこと。0.85 まで下げていたときは、
+# 全マテリアルが揃って暗くなり「白いナース服が灰色」になった。
 # アルベドはほぼ白の微細変化にとどめ、色は Unity 側の _BaseColor に任せる。
 # こうすればナース服・警備服・患者衣で同じ布テクスチャを共用できる。
 #
@@ -100,7 +102,7 @@ def fabric():
 
     # 使い込みによる毛羽立ち・薄い汚れ
     wear = fbm(n, n, octaves=3, base=3)
-    albedo = np.clip(0.90 + weave * 0.10 - wear * 0.16, 0, 1)
+    albedo = np.clip(0.985 + weave * 0.015 - wear * 0.05, 0, 1)
 
     save_albedo("fabric_albedo.png", albedo, np.clip(0.86 - wear * 0.22, 0, 1))
     save_normal("fabric_N.png", height, 1.6)
@@ -115,7 +117,7 @@ def skin():
     mottle = fbm(n, n, octaves=3, base=5)
     height = np.clip(pores * 0.7 + mottle * 0.3, 0, 1)
 
-    albedo = np.clip(0.94 + (mottle - 0.5) * 0.10, 0, 1)
+    albedo = np.clip(0.985 + (mottle - 0.5) * 0.035, 0, 1)
     save_albedo("skin_albedo.png", albedo, np.clip(0.62 - pores * 0.10, 0, 1))
     save_normal("skin_N.png", height, 0.55)
     
@@ -139,7 +141,7 @@ def concrete():
         holes[y0:y1, x0:x1] = np.maximum(holes[y0:y1, x0:x1], np.clip(1.0 - d, 0, 1))
 
     height = np.clip(grain * 0.45 + lumps * 0.55 - holes * 0.75, 0, 1)
-    albedo = np.clip(0.92 + (lumps - 0.5) * 0.12 - holes * 0.25, 0, 1)
+    albedo = np.clip(0.975 + (lumps - 0.5) * 0.055 - holes * 0.14, 0, 1)
 
     save_albedo("concrete_albedo.png", albedo, np.clip(0.92 - grain * 0.12, 0, 1))
     save_normal("concrete_N.png", height, 2.4)
@@ -158,7 +160,7 @@ def plaster():
         ImageFilter.GaussianBlur(1.2)), dtype=np.float32) / 255.0
 
     height = np.clip(trowel * 0.7 + fine * 0.3 - peel * 0.45, 0, 1)
-    albedo = np.clip(0.95 + (trowel - 0.5) * 0.08 - peel * 0.18, 0, 1)
+    albedo = np.clip(0.985 + (trowel - 0.5) * 0.04 - peel * 0.10, 0, 1)
 
     save_albedo("plaster_albedo.png", albedo, np.clip(0.90 - trowel * 0.10 + peel * 0.06, 0, 1))
     save_normal("plaster_N.png", height, 1.5)
@@ -182,7 +184,7 @@ def painted_metal():
         ImageFilter.GaussianBlur(0.8)), dtype=np.float32) / 255.0
 
     height = np.clip(brushed * 0.35 - chips * 0.55, 0, 1)
-    albedo = np.clip(0.93 - chips * 0.35 + (brushed - 0.5) * 0.06, 0, 1)
+    albedo = np.clip(0.975 - chips * 0.20 + (brushed - 0.5) * 0.03, 0, 1)
 
     save_albedo("metal_albedo.png", albedo, np.clip(0.42 + chips * 0.35 + brushed * 0.10, 0, 1))
     save_normal("metal_N.png", height, 1.1)
@@ -210,7 +212,7 @@ def ceiling_tile():
     fibre = fbm(n, n, octaves=4, base=20)
 
     height = np.clip(fibre * 0.35 - holes * 0.8, 0, 1)
-    albedo = np.clip(0.94 - holes * 0.30 + (fibre - 0.5) * 0.06, 0, 1)
+    albedo = np.clip(0.975 - holes * 0.17 + (fibre - 0.5) * 0.03, 0, 1)
 
     save_albedo("ceiling_albedo.png", albedo, np.clip(0.94 - fibre * 0.06, 0, 1))
     save_normal("ceiling_N.png", height, 1.8)
