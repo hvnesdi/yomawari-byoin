@@ -10,6 +10,8 @@
 # アルベドはほぼ白の微細変化にとどめ、色は Unity 側の _BaseColor に任せる。
 # こうすればナース服・警備服・患者衣で同じ布テクスチャを共用できる。
 #
+# 解像度は 1024。512 だと近接時に粒が見えた。
+#
 # 実行: python tools/gen_surfaces.py
 
 import os
@@ -22,7 +24,7 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
 rng = np.random.default_rng(19951124)   # 固定。再生成で結果が変わらないように
 
 
-def fbm(h, w, octaves=5, base=4, persistence=0.55):
+def fbm(h, w, octaves=6, base=4, persistence=0.55):
     """フラクタルノイズ。自然な凹凸の土台。"""
     acc = np.zeros((h, w), dtype=np.float32)
     amp, total = 1.0, 0.0
@@ -88,7 +90,7 @@ def save_normal(name, height, strength):
 # ----------------------------------------------------------------------
 def fabric():
     """布の織り目。アルベドはほぼ白（色は _BaseColor に任せる）。"""
-    n = 512
+    n = 1024
     yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
 
     # 平織りの交差。周期を細かくして、モデル上で数センチの目になるようにする
@@ -112,7 +114,7 @@ def fabric():
 
 def skin():
     """肌。顔の造形は作らない（顔の無い人型という設計）。毛穴程度の微細凹凸のみ。"""
-    n = 512
+    n = 1024
     pores = fbm(n, n, octaves=5, base=48)
     mottle = fbm(n, n, octaves=3, base=5)
     height = np.clip(pores * 0.7 + mottle * 0.3, 0, 1)
@@ -125,7 +127,7 @@ def skin():
 
 def concrete():
     """コンクリート。骨材の粒と気泡、たまに欠け。"""
-    n = 512
+    n = 1024
     grain = fbm(n, n, octaves=5, base=24)
     lumps = fbm(n, n, octaves=3, base=6)
 
@@ -150,7 +152,7 @@ def concrete():
 
 def plaster():
     """漆喰。鏝跡のうねりと、ところどころの剥がれ。"""
-    n = 512
+    n = 1024
     trowel = fbm(n, n, octaves=4, base=5)
     fine = fbm(n, n, octaves=5, base=40)
 
@@ -169,7 +171,7 @@ def plaster():
 
 def painted_metal():
     """塗装した金属。配管やラジエーター用。刷毛目と塗装の剥がれ。"""
-    n = 512
+    n = 1024
     yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
 
     # 縦方向の刷毛目
@@ -194,9 +196,9 @@ def painted_metal():
 
 def ceiling_tile():
     """天井の吸音板。細かい孔が特徴。"""
-    n = 512
+    n = 1024
     holes = np.zeros((n, n), dtype=np.float32)
-    step = 11
+    step = 22
     for y in range(4, n, step):
         for x in range(4, n, step):
             jy, jx = rng.integers(-2, 3, 2)

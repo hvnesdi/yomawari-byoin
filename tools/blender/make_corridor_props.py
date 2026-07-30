@@ -195,6 +195,55 @@ def make_cornice():
     return join(parts, "Cornice")
 
 
+
+# ----------------------------------------------------------------------
+# 露出配線ダクトとジャンクションボックス。壁を縦に走る。
+# 古い建物では配線が後付けで露出しているのが普通で、これがあると
+# 「使われていた建物」に見える。-Y を向く。
+# ----------------------------------------------------------------------
+def make_conduit():
+    parts = []
+    H = 1.6
+
+    parts.append(cyl("ConduitPipe", (0.0, 0.0, 0.0), 0.016, H, axis="Z"))
+    # 留め金具
+    for i in range(3):
+        z = -H * 0.35 + i * (H * 0.35)
+        parts.append(box(f"Clamp{i}", (0.0, 0.012, z), (0.05, 0.022, 0.016)))
+    # ジャンクションボックス
+    parts.append(box("JBox", (0.0, -0.014, H * 0.42), (0.11, 0.055, 0.11)))
+    parts.append(box("JBoxLid", (0.0, -0.042, H * 0.42), (0.095, 0.008, 0.095)))
+
+    return join(parts, "Conduit_Run")
+
+
+# ----------------------------------------------------------------------
+# 点検口。壁の設備スペースへの開口。四隅にビス。-Y を向く。
+# ----------------------------------------------------------------------
+def make_access_panel():
+    parts = []
+    W = H = 0.42
+
+    parts.append(box("PanelPlate", (0.0, 0.0, 0.0), (W, 0.014, H)))
+    parts.append(box("PanelFrame", (0.0, 0.008, 0.0), (W + 0.03, 0.010, H + 0.03)))
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            parts.append(cyl(f"Screw{sx}{sz}", (sx * W * 0.42, -0.010, sz * H * 0.42),
+                              0.010, 0.008, axis="Y"))
+    return join(parts, "Access_Panel")
+
+
+# ----------------------------------------------------------------------
+# コンセント。小さいが、あると生活の痕跡になる。-Y を向く。
+# ----------------------------------------------------------------------
+def make_outlet():
+    parts = []
+    parts.append(box("OutletPlate", (0.0, 0.0, 0.0), (0.085, 0.012, 0.125)))
+    for sz in (-1, 1):
+        parts.append(box(f"Slot{sz}", (0.0, -0.008, sz * 0.028), (0.042, 0.008, 0.020)))
+    return join(parts, "Outlet")
+
+
 # ----------------------------------------------------------------------
 def uv_unwrap(obj):
     """
@@ -273,4 +322,7 @@ if __name__ == "__main__":
     build("radiator", make_radiator, "Radiator.fbx",     (0.0, 0.0, 0.0), 1.7, 0.0)
     build("skirting", make_skirting, "Skirting.fbx",     (0.0, 0.0, 0.05), 0.8, 0.05)
     build("cornice",  make_cornice,  "Cornice.fbx",      (0.0, 0.0, 0.0),  0.8, 0.0)
+    build("conduit",  make_conduit,      "Conduit_Run.fbx",   (0.0, 0.0, 0.0), 1.5, 0.0)
+    build("panel",    make_access_panel, "Access_Panel.fbx",  (0.0, 0.0, 0.0), 0.9, 0.0)
+    build("outlet",   make_outlet,       "Outlet.fbx",        (0.0, 0.0, 0.0), 0.5, 0.0)
     print("=== done ===")

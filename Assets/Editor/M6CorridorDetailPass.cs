@@ -38,7 +38,8 @@ public static class M6CorridorDetailPass
     public static void RunBatch()
     {
         var models = new Dictionary<string, GameObject>();
-        foreach (var name in new[] { "Pipe_Run", "Vent_Grille", "Wall_Sign", "Radiator", "Skirting", "Cornice" })
+        foreach (var name in new[] { "Pipe_Run", "Vent_Grille", "Wall_Sign", "Radiator", "Skirting", "Cornice",
+                                      "Conduit_Run", "Access_Panel", "Outlet" })
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{ModelDir}/{name}.fbx");
             if (prefab == null) { Debug.LogError($"[Detail] {name}.fbx が無い"); continue; }
@@ -62,6 +63,10 @@ public static class M6CorridorDetailPass
             // 巾木と見切りは壁と同系の塗装。目立たせるものではない
             ["Skirting"]    = FindMaterial("Prop_Sign_Plate", "Prop_Wood"),
             ["Cornice"]     = FindMaterial("Prop_Sign_Plate", "Prop_Wood"),
+            // 露出配線は金属、点検口とコンセントは塗装板
+            ["Conduit_Run"]  = FindMaterial("Prop_Vent_Galv", "Prop_ExtMetal"),
+            ["Access_Panel"] = FindMaterial("Prop_Sign_Plate", "Prop_Wood"),
+            ["Outlet"]       = FindMaterial("Prop_Sign_Plate", "Prop_Wood"),
         };
 
         foreach (var path in Scenes)
@@ -188,6 +193,39 @@ public static class M6CorridorDetailPass
                 if (FarEnough("radiator", pos, 9f))
                 {
                     Place(models["Radiator"], pos, faceRotation, root, Mat(mats, "Radiator"), $"Radiator_{placed}");
+                    placed++;
+                }
+            }
+
+            // 露出配線: 壁を縦に走る。古い建物は配線が後付けで露出している
+            if (wallIndex % 9 == 4 && models.ContainsKey("Conduit_Run"))
+            {
+                var pos = face + Vector3.up * (b.min.y + 1.35f);
+                if (FarEnough("conduit", pos, 12f))
+                {
+                    Place(models["Conduit_Run"], pos, faceRotation, root, Mat(mats, "Conduit_Run"), $"Conduit_{placed}");
+                    placed++;
+                }
+            }
+
+            // 点検口: 設備スペースへの開口
+            if (wallIndex % 11 == 6 && models.ContainsKey("Access_Panel"))
+            {
+                var pos = face + Vector3.up * (b.min.y + 0.62f);
+                if (FarEnough("panel", pos, 14f))
+                {
+                    Place(models["Access_Panel"], pos, faceRotation, root, Mat(mats, "Access_Panel"), $"Panel_{placed}");
+                    placed++;
+                }
+            }
+
+            // コンセント: 小さいが生活の痕跡になる
+            if (wallIndex % 4 == 1 && models.ContainsKey("Outlet"))
+            {
+                var pos = face + Vector3.up * (b.min.y + 0.32f);
+                if (FarEnough("outlet", pos, 5f))
+                {
+                    Place(models["Outlet"], pos, faceRotation, root, Mat(mats, "Outlet"), $"Outlet_{placed}");
                     placed++;
                 }
             }
