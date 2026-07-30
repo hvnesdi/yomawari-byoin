@@ -70,6 +70,14 @@ public static class M5GrimePass
             mat.SetFloat("_Surface", 1f);        // Transparent
             mat.SetFloat("_Blend", 0f);          // Alpha
             mat.SetFloat("_AlphaClip", 0f);
+
+            // **これが原因だった。**
+            // URP の「Preserve Specular Lighting」が有効だと、半透明マテリアルの
+            // 合成は乗算前提アルファに強制される（_SrcBlend=One + _ALPHAPREMULTIPLY_ON）。
+            // マテリアルのインポート時に URP 側が入れ直すので、
+            // こちらで _SrcBlend を書いても毎回上書きされていた。
+            // 鏡面反射の保存はデカールには不要なので切る。
+            mat.SetFloat("_BlendModePreserveSpecular", 0f);
             // URP の _SrcBlend / _DstBlend / _ZWrite は Float プロパティなので
             // SetFloat で書くこと。SetInt は Integer プロパティ用で、ここでは
             // 何も起きずに素通りする（実際 _SrcBlend が 1 のまま残って白く抜けた）。
@@ -84,7 +92,38 @@ public static class M5GrimePass
 
             EditorUtility.SetDirty(mat);
         }
-        Debug.Log($"[Grime] デカール {mats.Count} 種のブレンド設定を修正");
+
+        // **書いた後に読み直して確かめる。**
+        //
+        // 上の設定は前から書いてあったが、保存された .mat は
+        // `_SrcBlend: 1`（One）で `_ALPHAPREMULTIPLY_ON` も有効なままだった。
+        // 乗算前提のアルファで合成されるため、デカールの透明部分の色が
+        // 加算されて壁に明るい矩形が浮く。「白い矩形」の原因のひとつがこれ。
+        //
+        // API を呼んだことと、値が残ることは別。ここで数えて報告する。
+        AssetDatabase.SaveAssets();
+        foreach (var mat in mats.Values)
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(mat));
+
+        int wrong = 0;
+        foreach (var mat in mats.Values)
+        {
+            var reloaded = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GetAssetPath(mat));
+            if (reloaded == null) continue;
+
+            float src = reloaded.GetFloat("_SrcBlend");
+            bool premultiplied = reloaded.IsKeywordEnabled("_ALPHAPREMULTIPLY_ON");
+
+            if (src != (float)UnityEngine.Rendering.BlendMode.SrcAlpha || premultiplied)
+            {
+                Debug.LogWarning($"[Grime] {reloaded.name}: 設定が残っていない " +
+                                 $"(_SrcBlend={src} / premultiply={premultiplied})");
+                wrong++;
+            }
+        }
+
+        Debug.Log($"[Grime] デカール {mats.Count} 種のブレンド設定を修正" +
+                  (wrong > 0 ? $"（うち {wrong} 種は書き込めていない）" : "（読み直して確認済み）"));
     }
 
     /// <summary>
