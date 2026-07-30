@@ -51,7 +51,15 @@ public static class M6CorridorDetailPass
             return;
         }
 
-        var metal = FindMaterial("Mat_Bed_Metal_01", "Prop_ExtMetal", "IVMetal", "FL_Metal");
+        // 設備ごとに材質を分ける。全部同じ金属マテリアルを共用していたので
+        // 配管もラジエーターも案内表示も同じ材質に見えていた（M7SurfacePass が作る）
+        var mats = new Dictionary<string, Material>
+        {
+            ["Pipe_Run"]    = FindMaterial("Prop_Pipe_Painted", "Mat_Bed_Metal_01"),
+            ["Vent_Grille"] = FindMaterial("Prop_Vent_Galv", "Prop_ExtMetal", "Mat_Bed_Metal_01"),
+            ["Wall_Sign"]   = FindMaterial("Prop_Sign_Plate", "Prop_Wood", "Mat_Bed_Metal_01"),
+            ["Radiator"]    = FindMaterial("Prop_Radiator_Enamel", "Mat_Bed_Metal_01"),
+        };
 
         foreach (var path in Scenes)
         {
@@ -65,8 +73,9 @@ public static class M6CorridorDetailPass
             if (oldMarker != null) Object.DestroyImmediate(oldMarker);
 
             var root = new GameObject(RootName).transform;
-            int placed = PlaceDetails(root, models, metal);
-            int lamps = path.EndsWith("HospitalBasement.unity") ? AddBasementLamps(root, metal) : 0;
+            int placed = PlaceDetails(root, models, mats);
+            int lamps = path.EndsWith("HospitalBasement.unity")
+                ? AddBasementLamps(root, mats.TryGetValue("Vent_Grille", out var lampMat) ? lampMat : null) : 0;
 
             new GameObject(MarkerName);
             EditorSceneManager.MarkSceneDirty(scene);
@@ -94,7 +103,8 @@ public static class M6CorridorDetailPass
     }
 
     // ------------------------------------------------------------------
-    static int PlaceDetails(Transform root, Dictionary<string, GameObject> models, Material metal)
+    static int PlaceDetails(Transform root, Dictionary<string, GameObject> models,
+                             Dictionary<string, Material> mats)
     {
         // 壁パネルを集める。汚しパスと同じ判定
         var walls = Object.FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
@@ -133,7 +143,7 @@ public static class M6CorridorDetailPass
             if (wallIndex % 5 == 0 && models.ContainsKey("Vent_Grille"))
             {
                 var pos = face + Vector3.up * (b.max.y - 0.45f);
-                Place(models["Vent_Grille"], pos, faceRotation, root, metal, $"Vent_{placed}");
+                Place(models["Vent_Grille"], pos, faceRotation, root, Mat(mats, "Vent_Grille"), $"Vent_{placed}");
                 placed++;
             }
 
@@ -141,7 +151,7 @@ public static class M6CorridorDetailPass
             if (wallIndex % 7 == 3 && models.ContainsKey("Wall_Sign"))
             {
                 var pos = face + Vector3.up * (b.min.y + 1.75f);
-                Place(models["Wall_Sign"], pos, faceRotation, root, metal, $"Sign_{placed}");
+                Place(models["Wall_Sign"], pos, faceRotation, root, Mat(mats, "Wall_Sign"), $"Sign_{placed}");
                 placed++;
             }
 
@@ -149,7 +159,7 @@ public static class M6CorridorDetailPass
             if (wallIndex % 6 == 1 && width > 2.0f && models.ContainsKey("Radiator"))
             {
                 var pos = face + Vector3.up * (b.min.y + 0.42f);
-                Place(models["Radiator"], pos, faceRotation, root, metal, $"Radiator_{placed}");
+                Place(models["Radiator"], pos, faceRotation, root, Mat(mats, "Radiator"), $"Radiator_{placed}");
                 placed++;
             }
 
@@ -161,7 +171,7 @@ public static class M6CorridorDetailPass
                 var pos = face + outward * 0.18f + Vector3.up * (b.max.y - 0.22f)
                           - along * (width * 0.5f);
                 var rot = Quaternion.LookRotation(along, Vector3.up);
-                Place(models["Pipe_Run"], pos, rot, root, metal, $"Pipe_{placed}");
+                Place(models["Pipe_Run"], pos, rot, root, Mat(mats, "Pipe_Run"), $"Pipe_{placed}");
                 placed++;
             }
         }
@@ -280,6 +290,9 @@ public static class M6CorridorDetailPass
         }
         return count;
     }
+
+    static Material Mat(Dictionary<string, Material> mats, string key)
+        => mats.TryGetValue(key, out var m) ? m : null;
 
     static Quaternion LookRotationSafe(Vector3 forward)
         => forward.sqrMagnitude < 1e-6f ? Quaternion.identity : Quaternion.LookRotation(forward, Vector3.up);

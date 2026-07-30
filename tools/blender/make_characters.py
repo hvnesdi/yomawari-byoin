@@ -149,6 +149,23 @@ def finalize(obj):
         except RuntimeError as e:
             print(f"  modifier_apply failed on {m.name}: {e}")
     obj.select_set(False)
+    uv_unwrap(obj)
+
+
+def uv_unwrap(obj):
+    """
+    UV を作る。Skin モディファイアや join した結果は UV を持たないため、
+    これが無いとテクスチャが一切乗らない（質感を足そうとして気づいた）。
+    Smart UV Project は継ぎ目が出るが、汚しや布目のような微細テクスチャなら
+    実用上問題にならない。
+    """
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.smart_project(angle_limit=1.15, island_margin=0.02)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    obj.select_set(False)
 
 
 def export_fbx(objects, filename):
