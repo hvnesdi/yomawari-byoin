@@ -81,7 +81,9 @@ public static class PlayModeBatchRunner
 
         var dir = System.IO.Path.Combine(Application.dataPath, "..", "Screenshots");
         System.IO.Directory.CreateDirectory(dir);
-        var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(dir, "PlayMode_1F.png"));
+        // シーンごとに別名で保存する。同じ名前だと上書きして比べられない
+        var path = System.IO.Path.GetFullPath(
+            System.IO.Path.Combine(dir, $"PlayMode_{TargetScene}.png"));
         System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
 
         Object.DestroyImmediate(tex);
@@ -110,10 +112,26 @@ public static class PlayModeBatchRunner
                            $"(panel={panelShown}, title=\"{title}\")");
     }
 
+    /// <summary>
+    /// 確認するシーン。環境変数 `SHOUTOU_SCENE` で切り替える。
+    ///
+    /// 1F だけを見ていたので、他のフロアがプレイ中にどう見えるか分からなかった。
+    /// 明るさはフロアごとに違う倍率を掛けているので（地下は 0.75 倍）、
+    /// **1F がちょうど良くても地下が真っ暗という状態に気づけない。**
+    /// </summary>
+    static string TargetScene
+    {
+        get
+        {
+            var name = System.Environment.GetEnvironmentVariable("SHOUTOU_SCENE");
+            return string.IsNullOrEmpty(name) ? "Hospital" : name;
+        }
+    }
+
     [MenuItem("消灯/M2: Play モードで通し確認")]
     public static void RunBatch()
     {
-        EditorSceneManager.OpenScene("Assets/Scenes/Hospital.unity", OpenSceneMode.Single);
+        EditorSceneManager.OpenScene($"Assets/Scenes/{TargetScene}.unity", OpenSceneMode.Single);
         SessionState.SetBool(RunningKey, true);
         SessionState.SetBool(DoneKey, false);
         captured = false;
