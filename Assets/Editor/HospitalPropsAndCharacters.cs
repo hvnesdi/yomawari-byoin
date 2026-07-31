@@ -181,6 +181,10 @@ public static class HospitalPropsAndCharacters
             manager.npcRenderer = torso;
             manager.normalMat   = body;
             manager.ghostMat    = _ghostBody;
+            // 最上位の band（幻覚60+）も入れる。入れ忘れていたので、
+            // 一番幻覚が強いときだけ NPC のマテリアルが null になっていた。
+            // 例外は出ず、描画がおかしくなるだけなので気づきにくい
+            manager.ghostHighMat = _shadowFigure != null ? _shadowFigure : _ghostBody;
             EditorUtility.SetDirty(manager);
         }
 

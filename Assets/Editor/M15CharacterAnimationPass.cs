@@ -272,6 +272,11 @@ public static class M15CharacterAnimationPass
                 if (character.GetComponent<CharacterAnimatorDriver>() == null &&
                     character.GetComponentInChildren<Animator>(true) != null)
                     character.gameObject.AddComponent<CharacterAnimatorDriver>();
+
+                // 繋ぎ直しも「変更」に数える。数えないと、差し替えが済んでいる
+                // シーンでは count が 0 のままで**保存されず**、直したつもりが
+                // 何も残らない（実際に一度これで空振りした）
+                if (Relink(character)) count++;
             }
 
             if (count > 0)
@@ -284,6 +289,76 @@ public static class M15CharacterAnimationPass
         }
 
         return total;
+    }
+
+    /// <summary>
+    /// 見た目を作り直したあと、それを参照していたコンポーネントを繋ぎ直す。
+    ///
+    /// **繋ぎ直しを忘れて壊した。** 差し替えで元の Visual を消したので、
+    /// `EnemyAppearanceController` が持っていた参照が空になり、
+    /// 幻覚レベルが上がっても敵が黒い人影に変わらなくなっていた。
+    /// 例外は出ないので、`M16ReferenceAudit` で数えるまで気づけなかった。
+    ///
+    /// オブジェクトを作り直すパスを書いたら、それを指していたものを探すこと。
+    /// </summary>
+    static bool Relink(Transform character)
+    {
+        bool touched = RelinkNpc(character);
+
+        var appearance = character.GetComponent<EnemyAppearanceController>();
+        if (appearance == null) return touched;
+
+        var visual = character.Find("Visual");
+        var shadow = character.Find("Visual_Shadow");
+        bool changed = false;
+
+        if (visual != null && appearance.guardVisual != visual.gameObject)
+        { appearance.guardVisual = visual.gameObject; changed = true; }
+
+        if (shadow != null && appearance.shadowVisual != shadow.gameObject)
+        { appearance.shadowVisual = shadow.gameObject; changed = true; }
+
+        // 体のレンダラも作り直しているので入れ直す
+        var renderers = new List<Renderer>();
+        if (visual != null) renderers.AddRange(visual.GetComponentsInChildren<Renderer>(true));
+        if (shadow != null) renderers.AddRange(shadow.GetComponentsInChildren<Renderer>(true));
+        if (renderers.Count > 0 &&
+            (appearance.bodyRenderers == null ||
+             appearance.bodyRenderers.Length != renderers.Count))
+        { appearance.bodyRenderers = renderers.ToArray(); changed = true; }
+
+        if (changed) EditorUtility.SetDirty(appearance);
+        return changed || touched;
+    }
+
+    /// <summary>
+    /// NPC の見た目まわりを繋ぎ直す。
+    ///
+    /// `ghostHighMat`（幻覚60+ で使うマテリアル）が未設定だった。
+    /// 一番幻覚が強いときだけ NPC のマテリアルが null になるが、
+    /// 例外は出ず描画が崩れるだけなので、`M16ReferenceAudit` で数えるまで
+    /// 誰も気づいていなかった。
+    ///
+    /// 本来の割り当ては `HospitalPropsAndCharacters` が行うが、
+    /// あちらを再実行すると**リグ付きモデルへの差し替えが巻き戻る**ので、
+    /// キャラクターに最後に触るこのパスでも面倒を見る。
+    /// </summary>
+    static bool RelinkNpc(Transform character)
+    {
+        var npc = character.GetComponent<NPCManager>();
+        if (npc == null || npc.ghostHighMat != null) return false;
+
+        // 幻覚が極まった状態なので、人影と同じ黒い材質を使う
+        var shadow = AssetDatabase.LoadAssetAtPath<Material>(
+            "Assets/Materials/Props/Char_ShadowFigure.mat");
+        var ghost = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Char_Ghost.mat");
+
+        var chosen = shadow != null ? shadow : ghost;
+        if (chosen == null) return false;
+
+        npc.ghostHighMat = chosen;
+        EditorUtility.SetDirty(npc);
+        return true;
     }
 
     /// <summary>

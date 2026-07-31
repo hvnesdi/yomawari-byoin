@@ -116,6 +116,11 @@ public class PlayModeSelfCheck : MonoBehaviour
         Check(FindFirstObjectByType<ChaseAudio>() != null, "追跡時の音",
               "ChaseAudio が無い（見つかっても音で分からない）");
 
+        var audioSystem = AudioSystem.Instance;
+        Check(audioSystem != null && audioSystem.bgmNormal != null &&
+              audioSystem.bgmTense != null && audioSystem.bgmPeak != null,
+              "緊張度の層", "BGM が未設定（緊張が上がっても音が変わらない）");
+
         // キャラクターが動いているか。
         // Animator が付いているだけでは足りない（コントローラ未設定でも
         // 例外は出ず、静止したまま黙って通る）。実際に再生中かを見る。

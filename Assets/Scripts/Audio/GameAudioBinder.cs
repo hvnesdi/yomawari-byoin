@@ -28,10 +28,27 @@ public class GameAudioBinder : MonoBehaviour
         return clip;
     }
 
+    static AudioClip LoadAmbient(string name)
+    {
+        var clip = Resources.Load<AudioClip>($"Audio/Ambient/{name}");
+        if (clip == null) Debug.LogWarning($"[GameAudioBinder] Audio/Ambient/{name} が見つからない");
+        return clip;
+    }
+
     void BindAudioSystem()
     {
         var audio = GetComponent<AudioSystem>();
         if (audio == null) return;
+
+        // 緊張度で入れ替わる層。曲ではなく、環境音の下に敷く気配。
+        // これが未設定だったので、`UpdateBGMByTension` が呼ばれても
+        // **音は何も変わらなかった**（緊張が上がったことが音で伝わらない）
+        if (audio.bgmNormal == null) audio.bgmNormal = LoadAmbient("BGM_Calm");
+        if (audio.bgmTense == null) audio.bgmTense = LoadAmbient("BGM_Tense");
+        if (audio.bgmPeak == null) audio.bgmPeak = LoadAmbient("BGM_Peak");
+        // エンドは平常と極限を流用する。専用に作るほどの尺を持たせていない
+        if (audio.bgmEndingHappy == null) audio.bgmEndingHappy = LoadAmbient("BGM_Calm");
+        if (audio.bgmEndingBad == null) audio.bgmEndingBad = LoadAmbient("BGM_Peak");
 
         // 時間の節目に鳴らす合図。
         // 合成音声は作れないので、放送のチャイムで代える。

@@ -412,6 +412,57 @@ def announcement_chime():
     save("SE_AnnounceChime.wav", normalize_rms(reverb(out, decay=2.6, mix=0.45), 0.10), "SE")
 
 
+def tension_beds():
+    """
+    緊張度で切り替わる層。`AudioSystem` は normal/tense/peak を持っていて、
+    `UpdateBGMByTension` で切り替える作りだったが、**どれも未設定で、
+    緊張が上がっても音は何も変わらなかった**。
+
+    曲は書かない。環境音の下に敷く「気配の層」にする。
+    旋律を付けると廃病院の生録音的な世界から浮くので、
+    高さの変化ではなく密度と濁りで段階を作る。
+    """
+    print("緊張度の層")
+    seconds = 20.0
+    n = int(SR * seconds)
+    t = np.arange(n) / SR
+
+    def drone(base, partials, wobble_hz, wobble_depth):
+        out = np.zeros(n)
+        for mult, lv in partials:
+            f = base * mult
+            f = round(f * seconds) / seconds     # ループが閉じるよう周期を丸める
+            wob = 1.0 + wobble_depth * np.sin(2 * np.pi * wobble_hz * t + rng.uniform(0, 6.28))
+            out += lv * np.sin(2 * np.pi * np.cumsum(f * wob) / SR)
+        return out / max(np.abs(out).max(), 1e-9)
+
+    # 平常。ほぼ聞こえない低い層。無音にしないのは、
+    # 緊張が上がったときの「増えた」感を作るため
+    calm = drone(41.2, ((1, 1.0), (2, 0.25), (3, 0.08)), 0.05, 0.002)
+    calm += spectral_noise(seconds, lambda f: band(f, 30, 160, 2.0)) * 0.4
+    save("BGM_Calm.wav", normalize_rms(reverb(calm, decay=3.0, mix=0.4, circular=True), 0.018),
+         "Ambient")
+
+    # 緊張。短二度を重ねてうなりを作る。脈打つ音量変化を足す
+    tense = drone(41.2, ((1, 1.0), (2, 0.3)), 0.07, 0.003)
+    tense += drone(43.7, ((1, 0.7), (2, 0.2)), 0.09, 0.004)   # わずかにずれた音でうねる
+    pulse = 1.0 + 0.35 * np.sin(2 * np.pi * (round(0.8 * seconds) / seconds) * t)
+    tense *= pulse
+    tense += spectral_noise(seconds, lambda f: band(f, 60, 400, 1.6)) * 0.3
+    save("BGM_Tense.wav", normalize_rms(reverb(tense, decay=3.4, mix=0.45, circular=True), 0.030),
+         "Ambient")
+
+    # 極限。三全音を足して濁らせ、脈を速める
+    peak = drone(41.2, ((1, 1.0), (2, 0.35), (3, 0.15)), 0.12, 0.006)
+    peak += drone(58.3, ((1, 0.8), (2, 0.3)), 0.15, 0.007)     # 三全音
+    peak += drone(87.4, ((1, 0.4),), 0.2, 0.01)
+    fast = 1.0 + 0.45 * np.sin(2 * np.pi * (round(2.2 * seconds) / seconds) * t)
+    peak *= fast
+    peak += spectral_noise(seconds, lambda f: band(f, 80, 900, 1.4)) * 0.35
+    save("BGM_Peak.wav", normalize_rms(reverb(peak, decay=3.6, mix=0.5, circular=True), 0.045),
+         "Ambient")
+
+
 def horror_events():
     """
     `HorrorEventSystem` が鳴らそうとしている音。
@@ -526,4 +577,5 @@ if __name__ == "__main__":
     announcement_chime()
     stinger()
     horror_events()
+    tension_beds()
     print("=== 完了 ===")
