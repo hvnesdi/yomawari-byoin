@@ -117,6 +117,52 @@ public static class VisualDiagnostics
         for (int i = 0; i < renderers.Length; i++) renderers[i].sharedMaterials = saved[i];
         foreach (var m in temp) Object.DestroyImmediate(m);
 
+        // 2枚とも保存する。
+        // 「床の長方形」のように、集計では拾えない（暗い・面積が小さい）ものは
+        // 2枚を見比べるのが早い。ID 側に長方形が出ればジオメトリ、
+        // 出なければライティング（ライトマップの継ぎ目など）と切り分けられる。
+        SavePng(beauty, "diag_beauty.png");
+        SavePng(idPass, "diag_id.png");
+
+        // 色→名前の対応表を丸ごと出す。
+        // 集計だけだと「画面のこの位置に写っているもの」を引けない。
+        // 表があれば、保存した diag_id.png の任意の座標から名前を逆引きできる。
+        {
+            var psb = new StringBuilder("[IDパレット] 色 → オブジェクト\n");
+            foreach (var (color, index) in palette)
+                psb.AppendLine($"    {color.r:X2}{color.g:X2}{color.b:X2}  " +
+                                (colorToName.TryGetValue(Key(color), out var nm) ? nm : "?"));
+            Debug.Log(psb.ToString());
+        }
+
+        // --- 画面下半分（＝主に床）に何が写っているかを集計 ---
+        // 明るいピクセルの集計では、暗くて小さいものが拾えない。
+        // 「床の長方形」を名前で特定するために、面積順で並べる。
+        {
+            var floorTally = new Dictionary<int, int>();
+            var ipAll = idPass.GetPixels32();
+            for (int y = H / 2; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                var c = ipAll[y * W + x];
+                int best = -1, bestDist = int.MaxValue;
+                foreach (var (color, _) in palette)
+                {
+                    int dr = color.r - c.r, dg = color.g - c.g, db = color.b - c.b;
+                    int d = dr * dr + dg * dg + db * db;
+                    if (d < bestDist) { bestDist = d; best = Key(color); }
+                }
+                if (bestDist > 16 * 16 * 3) continue;
+                floorTally[best] = floorTally.TryGetValue(best, out var n) ? n + 1 : 1;
+            }
+
+            var fsb = new StringBuilder("[画面下半分の内訳] 面積順\n");
+            foreach (var kv in floorTally.OrderByDescending(k => k.Value).Take(18))
+                fsb.AppendLine($"    {kv.Value,7} px  " +
+                                (colorToName.TryGetValue(kv.Key, out var nm) ? nm : "(不明)"));
+            Debug.Log(fsb.ToString());
+        }
+
         // --- 明るいピクセルを集計 ---
         var tally = new Dictionary<int, int>();
         int brightCount = 0;
@@ -157,6 +203,16 @@ public static class VisualDiagnostics
     }
 
     static int Key(Color32 c) => (c.r << 16) | (c.g << 8) | c.b;
+
+    /// <summary>診断用の画を Screenshots に落とす。目で見比べるため。</summary>
+    static void SavePng(Texture2D tex, string fileName)
+    {
+        var dir = System.IO.Path.Combine(Application.dataPath, "..", "Screenshots");
+        System.IO.Directory.CreateDirectory(dir);
+        var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(dir, fileName));
+        System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
+        Debug.Log($"[VisualDiagnostics] {path}");
+    }
 
     static Texture2D Render(Camera cam, int w, int h)
     {
