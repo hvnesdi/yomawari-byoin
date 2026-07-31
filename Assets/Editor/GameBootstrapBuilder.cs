@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -59,30 +60,60 @@ public static class GameBootstrapBuilder
             AssetDatabase.CreateAsset(profile, ProfilePath);
         }
 
-        // 既存のオーバーライドを一旦消してから作り直す（再実行しても増殖しないように）
-        for (int i = profile.components.Count - 1; i >= 0; i--)
-            Object.DestroyImmediate(profile.components[i], true);
-        profile.components.Clear();
+        // **中身を消してはいけない。**
+        //
+        // ここは幻覚演出用の3つ（ビネット・色収差・レンズ歪み）だけを見ているが、
+        // 同じアセットに M5LookPass が色調整・トーンマップ・グレインを入れている。
+        // 以前はこの関数が毎回すべて消してから3つを足し直していたので、
+        // **run_all.ps1 を走らせるたびに画づくりが丸ごと消えていた**。
+        // ゲーム側の修正をしただけのつもりで、画面が白く戻る。
+        //
+        // 消すのは「参照が死んでいるもの」だけにして、足りないものを足す方式にする。
+        int purged = profile.components.RemoveAll(c => c == null);
+        if (purged > 0)
+            Debug.Log($"[GameBootstrapBuilder] 参照の切れたオーバーライド {purged} 個を掃除");
 
-        var vignette = profile.Add<Vignette>(true);
-        vignette.intensity.value = 0.15f;
-        vignette.smoothness.value = 0.4f;
-        vignette.color.value = Color.black;
-
-        var ca = profile.Add<ChromaticAberration>(true);
-        ca.intensity.value = 0f;
-
-        var ld = profile.Add<LensDistortion>(true);
-        ld.intensity.value = 0f;
+        EnsureOverride<Vignette>(profile, v =>
+        {
+            v.intensity.value = 0.15f;
+            v.smoothness.value = 0.4f;
+            v.color.value = Color.black;
+        });
+        EnsureOverride<ChromaticAberration>(profile, c => c.intensity.value = 0f);
+        EnsureOverride<LensDistortion>(profile, l => l.intensity.value = 0f);
 
         EditorUtility.SetDirty(profile);
-        Debug.Log($"[GameBootstrapBuilder] VolumeProfile: {ProfilePath}");
+        AssetDatabase.SaveAssets();
+
+        int alive = profile.components.Count(c => c != null);
+        Debug.Log($"[GameBootstrapBuilder] VolumeProfile: {ProfilePath}（オーバーライド {alive} 個）");
         return profile;
     }
 
     // ------------------------------------------------------------------
     // __Systems.prefab
     // ------------------------------------------------------------------
+    /// <summary>
+    /// 無ければ足す。既にあれば値には触らない。
+    ///
+    /// 値を毎回上書きしないのは、M5LookPass が同じ効果（ビネット）に別の値を
+    /// 入れているため。どちらが後に走ったかで結果が変わるのを避ける。
+    /// 実行時は HallucinationSystem が毎フレーム上書きするので、初期値は競わせなくてよい。
+    ///
+    /// `AddObjectToAsset` を忘れるとアセットの子として保存されず、
+    /// 次に読み込んだとき参照が null になる（それで一度、演出が全部消えた）。
+    /// </summary>
+    static void EnsureOverride<T>(VolumeProfile profile, System.Action<T> configure)
+        where T : VolumeComponent
+    {
+        if (profile.TryGet<T>(out var existing) && existing != null) return;
+
+        var component = profile.Add<T>(true);
+        component.name = typeof(T).Name;
+        AssetDatabase.AddObjectToAsset(component, profile);
+        configure(component);
+    }
+
     static void BuildSystemsPrefab(VolumeProfile profile)
     {
         // マネージャは全てルートに載せる。

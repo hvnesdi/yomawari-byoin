@@ -259,6 +259,19 @@ public static class SceneWiringFixer
         }
 
         ExcludePropsFromNavMesh();
+
+        // 小さい歩行領域を捨てないようにする。
+        //
+        // 既定の 2 m² だと、**病室が丸ごと消えていた**。
+        // 病室はベッド2台で床が細切れになるうえ、入口がエージェント半径で
+        // 削られて廊下から切り離されるため、断片ごとの面積が閾値を割る。
+        // 結果、1F の病室3室すべてで歩ける点が 0 だった（実測 0/429）。
+        // 0.5 に下げると 99/429 まで戻る。
+        //
+        // 0 にはしない。ゼロだと数センチの破片まで残り、
+        // 敵が乗れない島が増えるだけになる。
+        surface.minRegionArea = 0.5f;
+
         surface.BuildNavMesh();
 
         var data = surface.navMeshData;
@@ -310,35 +323,62 @@ public static class SceneWiringFixer
         float bestClearance = -1f;
         bool found = false;
 
+        // 候補に点数を付けて、一番良いものを選ぶ。
+        //
+        // 最初は「体の周りが一番広い場所」を選んでいたが、それでは画にならなかった。
+        // 起動直後の画を決めるのは**どこまで見通せるか**で、広さではない。
+        // 廊下の奥まで抜ける画が強いのは見通しが長いからで、
+        // 広い部屋の真ん中は、広くても壁しか映らない。
+        //
+        // 広さは「立てる程度」あれば十分なので上限で頭打ちにし、
+        // 見通しの寄与を大きく取る。病室は設計上の開始地点なので下駄を履かせるが、
+        // 狭すぎる隅なら廊下に負けるだけ。
+        const float MinClearance = 0.7f;   // これ未満は隙間。人が立つ場所ではない
+
+        float Score(float clearance, float sight, bool preferred) =>
+            Mathf.Min(clearance, 1.5f) * 3f + Mathf.Min(sight, 15f) + (preferred ? 4f : 0f);
+
+        float bestScore = float.MinValue;
+        string bestLabel = "";
+        float bestSight = 0f;
+
         foreach (var area in StartSearchAreas(origin))
         {
-            const int Steps = 9;
-            for (int ix = 0; ix < Steps; ix++)
-            for (int iz = 0; iz < Steps; iz++)
+            // 広い範囲ほど細かく刻む。シーン全体を9分割では粗すぎて良い場所を逃す
+            int steps = Mathf.Clamp(
+                Mathf.RoundToInt(Mathf.Max(area.bounds.size.x, area.bounds.size.z) / 1.5f), 9, 31);
+
+            int candidates = 0;
+            for (int ix = 0; ix < steps; ix++)
+            for (int iz = 0; iz < steps; iz++)
             {
                 var candidate = new Vector3(
-                    Mathf.Lerp(area.bounds.min.x, area.bounds.max.x, ix / (float)(Steps - 1)),
+                    Mathf.Lerp(area.bounds.min.x, area.bounds.max.x, ix / (float)(steps - 1)),
                     origin.y,
-                    Mathf.Lerp(area.bounds.min.z, area.bounds.max.z, iz / (float)(Steps - 1)));
+                    Mathf.Lerp(area.bounds.min.z, area.bounds.max.z, iz / (float)(steps - 1)));
 
                 if (!NavMesh.SamplePosition(candidate, out var hit, 1.5f, NavMesh.AllAreas)) continue;
 
                 // 窮屈さ = 8方向のうち最も近い縁までの距離。角に居ると小さくなる
                 float clearance = Clearance(hit.position);
-                if (clearance > bestClearance)
+                if (clearance < MinClearance) continue;
+
+                float sight = BestView(hit.position).distance;
+                float score = Score(clearance, sight, area.preferred);
+                candidates++;
+
+                if (score > bestScore)
                 {
-                    bestClearance = clearance;
+                    bestScore = score;
                     bestPos = hit.position;
+                    bestClearance = clearance;
+                    bestSight = sight;
+                    bestLabel = area.label;
                     found = true;
                 }
             }
 
-            if (found)
-            {
-                Debug.Log($"[SceneWiringFixer] 開始位置は「{area.label}」から選んだ");
-                break;
-            }
-            Debug.Log($"[SceneWiringFixer] 「{area.label}」には歩ける床が無いので次を試す");
+            Debug.Log($"[SceneWiringFixer] 「{area.label}」立てる候補 {candidates} 箇所");
         }
 
         if (!found)
@@ -373,7 +413,8 @@ public static class SceneWiringFixer
         }
 
         Debug.Log($"[SceneWiringFixer] 初期位置を {moved:F1}m 動かした " +
-                  $"（周囲 {bestClearance:F1}m 空き / 視線 {sightLine:F1}m 先まで開けている）");
+                  $"（「{bestLabel}」/ 周囲 {bestClearance:F1}m 空き / " +
+                  $"視線 {sightLine:F1}m 先まで開けている / 点数 {bestScore:F1}）");
         return 1;
     }
 
@@ -389,10 +430,10 @@ public static class SceneWiringFixer
     /// なお 1F の PatientRoom_1 の周辺には NavMesh が無い。
     /// 病室が歩ける空間として成立していない可能性があり、要確認。
     /// </summary>
-    static System.Collections.Generic.List<(Bounds bounds, string label)>
+    static System.Collections.Generic.List<(Bounds bounds, string label, bool preferred)>
         StartSearchAreas(Vector3 fallbackCenter)
     {
-        var areas = new System.Collections.Generic.List<(Bounds, string)>();
+        var areas = new System.Collections.Generic.List<(Bounds, string, bool)>();
 
         foreach (var name in new[] { "PatientRoom_1", "PatientRoom", "PatientRoom2F_1", "PatientRoom3F_1" })
         {
@@ -405,19 +446,29 @@ public static class SceneWiringFixer
                 var b = renderers[0].bounds;
                 foreach (var r in renderers) b.Encapsulate(r.bounds);
                 b.Expand(new Vector3(-1.2f, 0f, -1.2f));   // 壁の内側だけを候補にする
-                areas.Add((b, $"{name} の形状 {b.size.x:F1}x{b.size.z:F1}m"));
+                areas.Add((b, $"{name} の形状 {b.size.x:F1}x{b.size.z:F1}m", true));
             }
             else
             {
                 // 形状が無い（空のマーカー）。位置だけを使う
                 areas.Add((new Bounds(room.transform.position, new Vector3(6f, 1f, 6f)),
-                           $"{name} の位置 {room.transform.position} の周辺 6m 四方"));
+                           $"{name} の位置 {room.transform.position} の周辺 6m 四方", true));
             }
             break;
         }
 
-        areas.Add((new Bounds(fallbackCenter, new Vector3(10f, 1f, 10f)),
-                   "現在位置の周辺 10m 四方"));
+        // 最後の受け皿は**シーン全体の歩ける範囲**にする。現在位置の周辺にしてはいけない。
+        //
+        // 周辺にしていたとき、一度プレイヤーが狭い病室に移された後は
+        // 探索範囲もその病室の周りになり、そこから抜け出せなくなった
+        // （前回の実行結果が次回の入力になってしまう）。
+        // シーン全体を見れば、何度走らせても同じ結論になる。
+        var surface = Object.FindFirstObjectByType<Unity.AI.Navigation.NavMeshSurface>();
+        if (surface != null && surface.navMeshData != null)
+            areas.Add((surface.navMeshData.sourceBounds, "シーン全体の歩ける範囲", false));
+        else
+            areas.Add((new Bounds(fallbackCenter, new Vector3(10f, 1f, 10f)), "現在位置の周辺 10m 四方", false));
+
         return areas;
     }
 
