@@ -42,6 +42,29 @@ public static class M16ReferenceAudit
         "waypoints",          // 巡回点。空でも巡回しないだけ
     };
 
+    /// <summary>
+    /// 実行時に代入される参照。アセット上は空で正しい。
+    ///
+    /// **隠さずに別枠で出す。** 「無視」にしてしまうと、後から結線が壊れても
+    /// 検査を通ってしまう。ここに挙がっているものは、プレイテストの
+    /// セルフチェック（実行中に非 null かを見る）が担保している。
+    /// </summary>
+    static readonly string[] RuntimeBound =
+    {
+        // GameAudioBinder が Resources から読んで入れる
+        "AudioSystem.bgmNormal", "AudioSystem.bgmTense", "AudioSystem.bgmPeak",
+        "AudioSystem.bgmEndingHappy", "AudioSystem.bgmEndingBad",
+        "AudioSystem.announce90", "AudioSystem.announce60", "AudioSystem.announce30",
+        "AudioSystem.announce10", "AudioSystem.announce5", "AudioSystem.announce0",
+        "HorrorEventSystem.footstepsClip", "HorrorEventSystem.nameCallClip",
+        "HorrorEventSystem.tapeScreamClip", "HorrorEventSystem.backVoiceClip",
+        "HorrorEventSystem.suddenNoiseClip", "HorrorEventSystem.npcPrefab",
+        // HorrorPropBinder がシーンから渡す（フロアごとに別の物になるため）
+        "HorrorEventSystem.mirrorRenderer", "HorrorEventSystem.mirrorNormalMat",
+        "HorrorEventSystem.mirrorDelayMat", "HorrorEventSystem.mirrorChangeMat",
+        "HorrorEventSystem.photoRenderer",
+    };
+
     [MenuItem("消灯/M16: 未設定の参照を調べる")]
     public static void RunBatch()
     {
@@ -69,18 +92,21 @@ public static class M16ReferenceAudit
                 Scan(root, label, Record);
         }
 
-        if (tally.Count == 0)
-        {
-            log.AppendLine("  未設定の参照は無い");
-        }
-        else
-        {
-            // 影響範囲の広いものから並べる
-            foreach (var kv in tally.OrderByDescending(k => k.Value.Count).ThenBy(k => k.Key))
-                log.AppendLine($"  {kv.Key,-52} {kv.Value.Count} 箇所 " +
-                                $"({string.Join(", ", kv.Value.Take(4))})");
-            log.AppendLine($"  計 {tally.Count} 種類");
-        }
+        var runtime = tally.Where(kv => RuntimeBound.Contains(kv.Key))
+                           .OrderBy(kv => kv.Key).ToList();
+        var unknown = tally.Where(kv => !RuntimeBound.Contains(kv.Key))
+                           .OrderByDescending(kv => kv.Value.Count).ThenBy(kv => kv.Key).ToList();
+
+        log.AppendLine($"── 要確認 {unknown.Count} 種類");
+        if (unknown.Count == 0) log.AppendLine("  未設定の参照は無い");
+        foreach (var kv in unknown)
+            log.AppendLine($"  {kv.Key,-52} {kv.Value.Count} 箇所 " +
+                            $"({string.Join(", ", kv.Value.Take(4))})");
+
+        // 隠さずに出す。ここが減っていたら結線側が壊れている可能性がある
+        log.AppendLine($"── 実行時に入るもの {runtime.Count} 種類（アセット上は空で正しい）");
+        foreach (var kv in runtime)
+            log.AppendLine($"  {kv.Key}");
 
         Debug.Log(log.ToString());
         if (Application.isBatchMode) EditorApplication.Exit(0);

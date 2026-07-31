@@ -24,9 +24,12 @@ public static class PlayModeBatchRunner
     //   5s  ゲーム画面をキャプチャ
     //   7s  タイマーを強制的に切らしてエンドを発火
     //  11s  エンドが出たか検証して終了
-    const double CaptureAt   = 5.0;
-    const double ForceEndAt  = 7.0;
-    const double PlaySeconds = 11.0;
+    const double CaptureAt       = 5.0;
+    const double MirrorCaptureAt = 6.0;
+    const double ForceEndAt      = 7.0;
+    const double PlaySeconds     = 11.0;
+
+    static bool mirrorCaptured;
 
     /// <summary>Play モードに入れなかった場合の打ち切り時間。</summary>
     const double EnterTimeout = 120.0;
@@ -37,12 +40,86 @@ public static class PlayModeBatchRunner
     static bool endForced;
 
     /// <summary>
+    /// 鏡の正面にプレイヤーを運んで撮る。
+    /// 「映っているか」「自分の体が映るか」は、結線の確認では判らない。
+    /// </summary>
+    static void CaptureMirror()
+    {
+        var mirror = Object.FindFirstObjectByType<MirrorReflection>();
+        if (mirror == null) { Debug.LogWarning("[PlayModeBatchRunner] 鏡が無いので撮れません"); return; }
+
+        var pc = Object.FindFirstObjectByType<PlayerController>();
+        if (pc == null) return;
+
+        // 鏡の見える側 1.4m に立たせ、鏡を向かせる。
+        // 向きは MirrorReflection が持つ法線を使う（Quad の表裏を間違えないため）
+        var mirrorTf = mirror.transform;
+        var normal = mirror.SurfaceNormal;
+        var stand = mirrorTf.position + normal * 1.4f;
+        stand.y = pc.transform.position.y;
+
+        // CharacterController が有効だと transform の直接移動を戻されることがある
+        var controller = pc.GetComponent<CharacterController>();
+        // 法線の方向に立たせたので、向くのは**その逆**（鏡のほう）。
+        // 法線をそのまま向かせていて、鏡に背を向けた画を撮っていた
+        var lookAtMirror = Quaternion.LookRotation(-normal, Vector3.up);
+
+        if (controller != null) controller.enabled = false;
+        pc.transform.position = stand;
+        pc.transform.rotation = lookAtMirror;
+        if (controller != null) controller.enabled = true;
+
+        var cam = Camera.main;
+        if (cam != null) cam.transform.rotation = lookAtMirror;
+
+        CaptureTo($"PlayMode_{TargetScene}_Mirror.png");
+        Debug.Log("[PlayModeBatchRunner] 鏡の前で撮影しました");
+
+        CapturePhoto(pc, controller);
+    }
+
+    /// <summary>
+    /// 壁の写真の前でも撮る。
+    /// 鏡が裏を向いていた件があるので、置いた物は撮って確かめる。
+    /// </summary>
+    static void CapturePhoto(PlayerController pc, CharacterController controller)
+    {
+        var binder = Object.FindFirstObjectByType<HorrorPropBinder>();
+        if (binder == null || binder.photoRenderer == null) return;
+
+        var photo = binder.photoRenderer.transform;
+        // スプライトは両面描かれるので、法線の向きは気にせず正面に立てばよい
+        var stand = photo.position + photo.forward * 1.1f;
+        stand.y = pc.transform.position.y;
+
+        if (controller != null) controller.enabled = false;
+        pc.transform.position = stand;
+        if (controller != null) controller.enabled = true;
+
+        // 向きは**カメラの位置から**求める。
+        // プレイヤーの原点から求めていたら、カメラは頭の高さにあるぶん上を向き、
+        // 写真ではなく天井を撮っていた
+        var cam = Camera.main;
+        var eye = cam != null ? cam.transform.position : stand;
+        pc.transform.rotation = Quaternion.LookRotation(
+            new Vector3(photo.position.x - stand.x, 0f, photo.position.z - stand.z), Vector3.up);
+        if (cam != null)
+            cam.transform.rotation = Quaternion.LookRotation(photo.position - eye, Vector3.up);
+
+        CaptureTo($"PlayMode_{TargetScene}_Photo.png");
+        Debug.Log("[PlayModeBatchRunner] 写真の前で撮影しました");
+    }
+
+    /// <summary>
     /// Play 中のゲーム画面を PNG に落とす。
     /// ScreenCapture はバッチモードだと黒になることがあるため、
     /// メインカメラを RenderTexture に描いて読み出す。
     /// UI は ScreenSpaceOverlay のため写らない（3D 描画の確認用）。
     /// </summary>
-    static void CaptureGameplayScreenshot()
+    static void CaptureGameplayScreenshot() => CaptureTo($"PlayMode_{TargetScene}.png");
+
+    /// <summary>現在のカメラの画を指定名で保存する。撮る対象が増えたので切り出した。</summary>
+    static void CaptureTo(string fileName)
     {
         var cam = Camera.main;
         if (cam == null) { Debug.LogWarning("[PlayModeBatchRunner] MainCamera が無く撮影できません"); return; }
@@ -82,8 +159,7 @@ public static class PlayModeBatchRunner
         var dir = System.IO.Path.Combine(Application.dataPath, "..", "Screenshots");
         System.IO.Directory.CreateDirectory(dir);
         // シーンごとに別名で保存する。同じ名前だと上書きして比べられない
-        var path = System.IO.Path.GetFullPath(
-            System.IO.Path.Combine(dir, $"PlayMode_{TargetScene}.png"));
+        var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(dir, fileName));
         System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
 
         Object.DestroyImmediate(tex);
@@ -135,6 +211,7 @@ public static class PlayModeBatchRunner
         SessionState.SetBool(RunningKey, true);
         SessionState.SetBool(DoneKey, false);
         captured = false;
+        mirrorCaptured = false;
         endForced = false;
         Debug.Log("[PlayModeBatchRunner] Play モードに入ります");
         EditorApplication.EnterPlaymode();
@@ -181,6 +258,15 @@ public static class PlayModeBatchRunner
             // ここで実行する必要がある。
             var cam = Camera.main;
             if (cam != null) VisualDiagnostics.IdentifyFromCamera(cam);
+        }
+
+        // 鏡の前まで運んで撮る。
+        // 結線できているかは自動で見られるが、**実際に映っているか**は画でしか判らない。
+        // 鏡は自分から探しに行かないと通りかからないので、こちらから寄せる
+        if (!mirrorCaptured && elapsed >= MirrorCaptureAt)
+        {
+            mirrorCaptured = true;
+            CaptureMirror();
         }
 
         if (!endForced && elapsed >= ForceEndAt)

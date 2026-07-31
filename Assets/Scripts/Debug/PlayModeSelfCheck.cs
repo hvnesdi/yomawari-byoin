@@ -116,6 +116,25 @@ public class PlayModeSelfCheck : MonoBehaviour
         Check(FindFirstObjectByType<ChaseAudio>() != null, "追跡時の音",
               "ChaseAudio が無い（見つかっても音で分からない）");
 
+        // 鏡と写真の演出。実装はあったが、映る物も写真もシーンに無く、
+        // 参照も空だったので、発火しても何も起きていなかった
+        var horrorProps = HorrorEventSystem.Instance;
+        Check(horrorProps != null && horrorProps.mirrorRenderer != null &&
+              horrorProps.mirrorNormalMat != null && horrorProps.mirrorDelayMat != null &&
+              horrorProps.mirrorChangeMat != null,
+              "鏡の演出", "鏡が結線されていない（映りの変化が起きない）");
+
+        Check(horrorProps != null && horrorProps.photoRenderer != null &&
+              horrorProps.photoVariants != null && horrorProps.photoVariants.Length > 1,
+              "写真の演出", "写真が結線されていない（入れ替わりが起きない）");
+
+        Check(horrorProps != null && horrorProps.npcPrefab != null,
+              "暗室の人物", "npcPrefab が未設定（暗い部屋の演出で何も出ない）");
+
+        var mirror = FindFirstObjectByType<MirrorReflection>();
+        Check(mirror != null && mirror.mirrorBody != null,
+              "鏡に映る体", "鏡に映る体が無い（一人称なので何も映らない）");
+
         var audioSystem = AudioSystem.Instance;
         Check(audioSystem != null && audioSystem.bgmNormal != null &&
               audioSystem.bgmTense != null && audioSystem.bgmPeak != null,
