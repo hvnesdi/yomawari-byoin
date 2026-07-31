@@ -105,6 +105,16 @@ public class PlayModeSelfCheck : MonoBehaviour
         var footsteps = FindFirstObjectByType<FootstepPlayer>();
         Check(footsteps != null, "足音", "FootstepPlayer がプレイヤーに付いていない");
 
+        // キャラクターが動いているか。
+        // Animator が付いているだけでは足りない（コントローラ未設定でも
+        // 例外は出ず、静止したまま黙って通る）。実際に再生中かを見る。
+        var animators = FindObjectsByType<Animator>(FindObjectsSortMode.None)
+                            .Where(a => a.runtimeAnimatorController != null).ToList();
+        Check(animators.Count > 0, "キャラクターのモーション",
+              "Animator が1つも設定されていない（敵が滑って移動する）");
+        Check(animators.Any(a => a.GetCurrentAnimatorClipInfoCount(0) > 0),
+              "モーション再生中", "Animator は在るがクリップが再生されていない");
+
         Check(Camera.main != null, "MainCamera", "カメラが無い");
 
         var ui = UIManager.Instance;
