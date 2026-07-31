@@ -16,8 +16,8 @@
 
 - 日時: 2026-07-30
 - フェーズ: **M1〜M12 完了。ゲームは通しで動作し、見た目は一括で再現できる**
-- 最新コミット: `aca9757`（`origin/main` と一致・未コミットの変更なし）
-- 検証: **全フロアでプレイテスト 17/17 PASS**（`run_playtest_all.ps1`）
+- 最新コミット: `29649b2`（`origin/main` と一致・未コミットの変更なし）
+- 検証: **全フロアでプレイテスト 20/20 PASS**（`run_playtest_all.ps1`）
 - **反映の順番**: ゲーム側を直したら `run_all.ps1`、見た目を直したら `run_visuals.ps1`。
   どちらを先に走らせても結果は同じになるようにしてある（以前は run_all が見た目を壊していた）
 - 検証: プレイテスト 12/12 PASS、エンド発火まで確認
@@ -41,6 +41,10 @@
 | 病室 | 1F の病室に入れない（歩ける点 0/429） | NavMesh の `minRegionArea`(既定2m²) が、細切れになった病室の床を捨てていた |
 | **音** | **ゲームが完全に無音だった** | `AudioSystem` にクリップが1つも割り当てられていない。既存 wav はサイン波で、3フロア分の BGM は同一ファイル |
 | **キャラクター** | 敵が姿勢を固めたまま滑って移動 | ボーンもモーションも無く、メッシュを動かしているだけだった |
+| 恐怖演出 | 演出は発火するのに無音 | `HorrorEventSystem` のクリップが全て null |
+| 緊張度 | 緊張が上がっても音が変わらない | `bgmNormal/Tense/Peak` が全て null |
+| 敵の検知 | 見つかっても音がしない | 検知音を鳴らす処理そのものが無かった |
+| 幻覚の最上位 | NPC の描画が崩れる | `NPCManager.ghostHighMat` が未設定（60+ でだけ null になる） |
 
 **実測値（1F のプレイ画面）**: 平均輝度 0.419 → **0.198**、暗部(<0.15) 0.6% → **53.7%**。
 昼間の事務所から、夜の病院になった。
@@ -288,6 +292,31 @@ API の呼び出しが成功しても、値が残るとは限らない。
 - **Play モードを使うバッチ実行に `-quit` を付けてはいけない。**
   `-executeMethod` が返った時点で Unity が終了するので、Play モードが1回も
   ティックせずに「成功」で終わる。`run_playtest*.ps1` はどちらも付けていない
+
+**未設定の参照は `M16ReferenceAudit` で数える。**
+
+```powershell
+& 'C:\Program Files\Unity\Hub\Editor\6000.4.7f1\Editor\Unity.exe' -batchmode `
+  -projectPath 'C:\Users\hvnes\YomawariByoin' `
+  -executeMethod M16ReferenceAudit.RunBatch -logFile unity_logs\m16.log -quit
+```
+
+シーンと `__Systems.prefab` を走査して、自作コンポーネントの未設定参照を
+**場所付きで**並べる。この形の不具合（下記）を偶然に頼らず見つけるための道具。
+
+**場所を出すのが要点。** 最初は型名だけ出していて、
+`EnemyAppearanceController.guardVisual が 1F で null` を
+「見た目を作り直したときに壊した」と読み違えた。
+場所を出したら `CharacterShowcase_1F/Enemy_*_Preview`——撮影用の置物で、
+実際の敵はずっと正しく繋がっていた。
+**どこが悪いかを言わない検査は、こういう誤読を招く。**
+
+現在の残り（いずれも判断が要るもの。未設定=不具合とは限らない）:
+- `HorrorEventSystem` の鏡・写真・NPC生成の演出 … 対応するシーン上の物が無い。
+  鏡や写真を置けば動く。置くかどうかは演出の判断
+- `AudioSystem.ambientVentilation` 他 … `FloorAmbience` が肩代わりしているので未使用
+- `*MixerGroup` … AudioMixer を作っていない。作れば音量バランスを一括で扱える
+- 撮影用の `CharacterShowcase_*` の参照 … 画作りにしか使わないので実害なし
 
 **「入れ物がある」ことを「中身がある」と読み替えないこと。**
 `AudioSystem` はクリップのフィールドを一通り備えていて、
@@ -667,6 +696,7 @@ git add -A && git commit -m "M1: システム常駐化・シーン結線修復�
 | 小物の配置をやり直す（+ベイク+撮影） | `run_props_fix.ps1` | 約7分 |
 | **M10 が冪等か確かめる** | `run_m10_check.ps1` | 約1分 |
 | 音を作り直す | `python tools/gen_audio.py` → `M14AudioPass` | 約2分 |
+| **未設定の参照を調べる** | `M16ReferenceAudit` | 約1分 |
 | キャラの骨とモーションを作り直す | `blender --background --python tools/blender/rig_characters.py` → `M15CharacterAnimationPass` | 約3分 |
 
 `run_playtest.ps1` はプレイ画面を `Screenshots/PlayMode_1F.png` に保存する。
