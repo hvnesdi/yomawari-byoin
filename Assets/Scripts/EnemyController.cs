@@ -24,6 +24,12 @@ public class EnemyController : MonoBehaviour
     private enum State { Patrol, Chase }
     private State state = State.Patrol;
 
+    /// <summary>
+    /// 追跡中か。音の演出（検知音・心音）が状態を知る必要があるので公開する。
+    /// 状態そのものは外から変えられないよう private のままにしてある。
+    /// </summary>
+    public bool IsChasing => state == State.Chase;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();

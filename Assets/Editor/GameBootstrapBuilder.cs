@@ -133,6 +133,9 @@ public static class GameBootstrapBuilder
         root.AddComponent<HorrorEventSystem>();
         root.AddComponent<AudioSystem>();
 
+        // クリップを実行時に配る。インスペクタで結線するとここの作り直しで消える
+        root.AddComponent<GameAudioBinder>();
+
         // フロアごとの環境音。**これが無い間、ゲームは完全に無音だった**
         // （AudioSystem はクリップの入れ物だが、何も割り当てられていなかった）。
         // 別の GameObject に置くのは、AudioSource を1つのオブジェクトに

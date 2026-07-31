@@ -105,6 +105,17 @@ public class PlayModeSelfCheck : MonoBehaviour
         var footsteps = FindFirstObjectByType<FootstepPlayer>();
         Check(footsteps != null, "足音", "FootstepPlayer がプレイヤーに付いていない");
 
+        // 恐怖演出は見えない場所で起きるので、音が無いと文字通り何も起きない。
+        // フィールドがあるだけで中身が無い状態が長く続いたので、中身を見る
+        var horror = FindFirstObjectByType<HorrorEventSystem>();
+        Check(horror != null && horror.footstepsClip != null && horror.nameCallClip != null &&
+              horror.tapeScreamClip != null && horror.backVoiceClip != null &&
+              horror.suddenNoiseClip != null,
+              "恐怖演出の音", "HorrorEventSystem のクリップが未設定（演出が無音で発火する）");
+
+        Check(FindFirstObjectByType<ChaseAudio>() != null, "追跡時の音",
+              "ChaseAudio が無い（見つかっても音で分からない）");
+
         // キャラクターが動いているか。
         // Animator が付いているだけでは足りない（コントローラ未設定でも
         // 例外は出ず、静止したまま黙って通る）。実際に再生中かを見る。

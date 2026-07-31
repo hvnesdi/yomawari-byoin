@@ -493,6 +493,7 @@ GameObject:
   - component: {fileID: 7916374355917939406}
   - component: {fileID: 4562354224153384563}
   - component: {fileID: 2277590932037396365}
+  - component: {fileID: 8209988951224545775}
   - component: {fileID: 1562900566306053315}
   m_Layer: 0
   m_Name: __Systems
@@ -786,6 +787,18 @@ MonoBehaviour:
   bgmMixerGroup: {fileID: 0}
   ambientMixerGroup: {fileID: 0}
   distortionMax: 0.8
+--- !u!114 &8209988951224545775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2791995631792655376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e61f3b525cc6a54995f8e26516593a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameAudioBinder
 --- !u!114 &1562900566306053315
 MonoBehaviour:
   m_ObjectHideFlags: 0

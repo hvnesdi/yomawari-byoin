@@ -412,6 +412,92 @@ def announcement_chime():
     save("SE_AnnounceChime.wav", normalize_rms(reverb(out, decay=2.6, mix=0.45), 0.10), "SE")
 
 
+def horror_events():
+    """
+    `HorrorEventSystem` が鳴らそうとしている音。
+    このシステムは既に「背後の足音」「名前を呼ぶ声」「悲鳴」などを発火していたが、
+    **クリップが1つも入っておらず、恐怖演出が全部無音で起きていた。**
+    見えない場所で何かが起きる演出なので、音が無いと文字通り何も起きない。
+    """
+    print("恐怖演出")
+
+    # 背後の足音。遠くて、残響が長く、こちらに近づいてくる
+    dur = 3.4
+    n = int(SR * dur)
+    steps = np.zeros(n)
+    for i in range(7):
+        pos = int((0.15 + i * 0.42) * SR)
+        if pos >= n:
+            break
+        seg_n = int(SR * 0.3)
+        st = np.arange(min(seg_n, n - pos)) / SR
+        # 近づくにつれ大きく、低く
+        near = i / 6.0
+        thump = np.sin(2 * np.pi * (120 - near * 30) * st) * np.exp(-st * 22)
+        thump += rng.normal(0, 1, st.size) * np.exp(-st * 130) * 0.4
+        steps[pos: pos + st.size] += thump * (0.25 + near * 0.75)
+    save("SE_DistantFootsteps.wav",
+         normalize_rms(reverb(steps, decay=2.8, mix=0.62), 0.09), "SE")
+
+    # 名前を呼ぶ声。言葉にはしない。
+    # 母音に近い共鳴を持つ息の音にとどめる（言語にすると急に安っぽくなる）
+    dur = 2.0
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    breath = spectral_noise(dur, lambda f: band(f, 200, 3500, 1.2))[:n]
+    voice = np.zeros(n)
+    for f0, lv in ((520, 1.0), (1180, 0.55), (2400, 0.22)):   # ざっくり「あ」の共鳴
+        drift = f0 * (1.0 + 0.03 * np.sin(2 * np.pi * 1.4 * t))
+        voice += lv * np.sin(2 * np.pi * np.cumsum(drift) / SR)
+    env = np.sin(np.pi * np.clip(t / dur, 0, 1)) ** 1.4
+    call = (voice / np.abs(voice).max() * 0.5 + breath * 0.5) * env
+    save("SE_NameCall.wav", normalize_rms(reverb(call, decay=2.6, mix=0.6), 0.08), "SE")
+
+    # テープの悲鳴。生の悲鳴ではなく、古い録音が歪んでいる音にする
+    dur = 2.6
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    f = 700 + 900 * np.sin(2 * np.pi * 0.8 * t) * np.exp(-t * 0.9)
+    cry = np.sin(2 * np.pi * np.cumsum(f) / SR)
+    cry += 0.4 * np.sin(2 * np.pi * np.cumsum(f * 2.02) / SR)   # わずかにずらして濁らせる
+    cry *= np.exp(-t * 1.1) * np.clip(t / 0.05, 0, 1)
+    cry = np.tanh(cry * 3.0)                                     # テープの飽和
+    hisstape = spectral_noise(dur, lambda f2: band(f2, 3000, 11000, 1.0))[:n] * 0.18
+    save("SE_TapeScream.wav",
+         normalize_rms(reverb(cry * 0.8 + hisstape, decay=1.8, mix=0.4), 0.13), "SE")
+
+    # 背後で囁く声
+    dur = 2.2
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    whisper = spectral_noise(dur, lambda f2: band(f2, 900, 6000, 1.3))[:n]
+    # 音節のような区切りを付ける。一定のノイズだと風になる
+    syll = np.zeros(n)
+    pos = 0
+    while pos < n:
+        length = int(rng.uniform(0.08, 0.2) * SR)
+        seg = np.sin(np.pi * np.linspace(0, 1, min(length, n - pos))) ** 1.5
+        syll[pos: pos + seg.size] += seg
+        pos += seg.size + int(rng.uniform(0.03, 0.14) * SR)
+    save("SE_BackVoice.wav",
+         normalize_rms(reverb(whisper * syll, decay=1.4, mix=0.45), 0.07), "SE")
+
+    # 突然の物音。金属が落ちる
+    dur = 2.0
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    bang = rng.normal(0, 1, n) * np.exp(-t * 60)
+    ring = np.zeros(n)
+    for f0, lv in ((430, 1.0), (712, 0.6), (1190, 0.35), (2030, 0.18)):
+        ring += lv * np.sin(2 * np.pi * f0 * t) * np.exp(-t * rng.uniform(3.5, 7.0))
+    # 跳ねて2度3度鳴る
+    for delay, lv in ((0.13, 0.5), (0.24, 0.28), (0.33, 0.15)):
+        d = int(delay * SR)
+        ring[d:] += (bang[: n - d] * 0.6 + ring[: n - d] * 0.3) * lv
+    save("SE_SuddenNoise.wav",
+         normalize_rms(reverb(bang + ring * 0.7, decay=2.2, mix=0.5), 0.15), "SE")
+
+
 def stinger():
     """幻覚・遭遇の瞬間に差し込む短い音。低い衝撃 + 金属の擦過"""
     print("スティンガー")
@@ -439,4 +525,5 @@ if __name__ == "__main__":
     enemy_detect()
     announcement_chime()
     stinger()
+    horror_events()
     print("=== 完了 ===")

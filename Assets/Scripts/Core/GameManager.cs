@@ -72,6 +72,9 @@ public class GameManager : MonoBehaviour
     public void OnTimeMilestone(int minutesRemaining)
     {
         UIManager.Instance?.ShowAnnouncement(GetAnnouncementText(minutesRemaining));
+        // 放送のチャイム。`AudioSystem.PlayAnnouncement` は前からあったが
+        // **どこからも呼ばれておらず**、時間の節目が文字だけで通り過ぎていた
+        AudioSystem.Instance?.PlayAnnouncement(minutesRemaining);
         Debug.Log($"[GameManager] Milestone: {minutesRemaining} min remaining");
     }
 

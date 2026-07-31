@@ -118,6 +118,15 @@ public static class SceneWiringFixer
             Debug.Log("[SceneWiringFixer] FootstepPlayer を追加");
         }
 
+        // 見つかった合図と、距離で強まる心音。
+        // 敵に追われても何の音もしないので、画面外から寄られると気づけなかった
+        if (player.GetComponent<ChaseAudio>() == null)
+        {
+            player.AddComponent<ChaseAudio>();
+            changes++;
+            Debug.Log("[SceneWiringFixer] ChaseAudio を追加");
+        }
+
         // カメラ（プレイヤーの子）
         var cam = player.GetComponentInChildren<Camera>(true);
         if (cam == null)
