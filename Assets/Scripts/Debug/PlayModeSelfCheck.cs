@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -85,6 +86,25 @@ public class PlayModeSelfCheck : MonoBehaviour
               "敵の追跡・手がかり調査が動作しない");
         Check(FindFirstObjectByType<AudioListener>() != null, "AudioListener",
               "音が一切鳴らない");
+
+        // AudioListener があるだけでは音は鳴らない。
+        // 実際、クリップが1つも割り当てられていないまま「AudioListener PASS」で
+        // 通り続け、**ゲームが完全に無音であることに長く気づけなかった**。
+        // 聞こえるものが実在するかを見る。
+        // 「何か鳴っている」では足りない。蛍光灯だけ鳴っていて環境音が止まっていても
+        // 通ってしまう。鳴っているものを種類ごとに数える。
+        var sources = FindObjectsByType<AudioSource>(FindObjectsSortMode.None)
+                          .Where(s => s.isPlaying && s.clip != null).ToList();
+        int buzz = sources.Count(s => s.clip.name.StartsWith("Fluorescent"));
+        int ambience = sources.Count(s => s.clip.name.StartsWith("Ambient_"));
+
+        Check(ambience > 0, "環境音", "フロアの環境音が鳴っていない");
+        Check(buzz > 0, "蛍光灯の音",
+              $"光源からの音が無い（鳴っている音源 {sources.Count} 個）");
+
+        var footsteps = FindFirstObjectByType<FootstepPlayer>();
+        Check(footsteps != null, "足音", "FootstepPlayer がプレイヤーに付いていない");
+
         Check(Camera.main != null, "MainCamera", "カメラが無い");
 
         var ui = UIManager.Instance;

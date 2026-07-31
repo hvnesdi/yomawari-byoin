@@ -132,6 +132,16 @@ public static class GameBootstrapBuilder
         var ending = root.AddComponent<EndingSystem>();
         root.AddComponent<HorrorEventSystem>();
         root.AddComponent<AudioSystem>();
+
+        // フロアごとの環境音。**これが無い間、ゲームは完全に無音だった**
+        // （AudioSystem はクリップの入れ物だが、何も割り当てられていなかった）。
+        // 別の GameObject に置くのは、AudioSource を1つのオブジェクトに
+        // 積み上げると AudioSystem 側の取得と混ざるため。
+        var ambienceGo = new GameObject("FloorAmbience");
+        ambienceGo.transform.SetParent(root.transform, false);
+        ambienceGo.AddComponent<AudioSource>();
+        ambienceGo.AddComponent<FloorAmbience>();
+
         root.AddComponent<PlayModeSelfCheck>();   // デバッグ用。リリース前に外す
         // NetworkManager は Steam 未起動時に落ちるため M1 では載せない（マルチプレイは M4 以降）
 

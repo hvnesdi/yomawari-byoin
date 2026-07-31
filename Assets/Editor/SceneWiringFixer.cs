@@ -109,6 +109,15 @@ public static class SceneWiringFixer
             Debug.Log("[SceneWiringFixer] PlayerAttack を追加（F キーで攻撃）");
         }
 
+        // 足音。歩き・走り・しゃがみで音量と間隔が変わるので、
+        // 隠れる遊びが音でも成立する
+        if (player.GetComponent<FootstepPlayer>() == null)
+        {
+            player.AddComponent<FootstepPlayer>();
+            changes++;
+            Debug.Log("[SceneWiringFixer] FootstepPlayer を追加");
+        }
+
         // カメラ（プレイヤーの子）
         var cam = player.GetComponentInChildren<Camera>(true);
         if (cam == null)
